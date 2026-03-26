@@ -1,91 +1,867 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ranking Comercial Live</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Comercial Inteligente</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-soft: #1f2937;
+      --card: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #22c55e;
+      --primary-soft: rgba(34, 197, 94, 0.15);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #38bdf8;
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #111827 45%, #1e293b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      color: var(--muted);
+    }
+
+    .status-badge {
+      background: var(--primary-soft);
+      color: #86efac;
+      border: 1px solid rgba(134, 239, 172, 0.2);
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: bold;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: normal;
+    }
+
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+
+    .kpi {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .kpi-value {
+      font-size: 1.9rem;
+      font-weight: bold;
+    }
+
+    .mini-info {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .progress-wrap {
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 13px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-label {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 12px;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #052e16;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.94rem;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .pill-med {
+      background: rgba(56, 189, 248, 0.15);
+      color: #7dd3fc;
+    }
+
+    .pill-ecos {
+      background: rgba(245, 158, 11, 0.14);
+      color: #fcd34d;
+    }
+
+    .insights {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .insight-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      line-height: 1.5;
+    }
+
+    .result-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .span-8, .span-6, .span-4, .span-3 {
+        grid-column: span 12;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans">
-    <div id="root"></div>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Dashboard Comercial Inteligente</h1>
+        <p>Painel completo para meta, comissão, simulação e histórico de vendas.</p>
+      </div>
+      <div class="status-badge" id="statusResumo">Carregando dados...</div>
+    </div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+    <div class="grid">
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">Meta pessoal</span>
+          <span class="kpi-value" id="metaPessoalView">R$ 6.800,00</span>
+          <span class="mini-info">Meta principal de Guilherme</span>
+        </div>
+      </div>
 
-        // IMPORTANTE: Substitui pelos teus dados REAIS do Firebase Console
-        // Se ainda não tens, o app vai carregar mas não vai salvar na nuvem até preencheres aqui.
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO_ID",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">Total Guilherme</span>
+          <span class="kpi-value" id="totalGuilhermeView">R$ 0,00</span>
+          <span class="mini-info">Vendas próprias acumuladas</span>
+        </div>
+      </div>
 
-        function App() {
-            const [sellers, setSellers] = useState([
-                { id: 1, name: 'Guilherme', sales: 0, contracts: 0 },
-                { id: 2, name: 'Vanessa', sales: 0, contracts: 0 }
-            ]);
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">MED total</span>
+          <span class="kpi-value" id="totalMedView">R$ 0,00</span>
+          <span class="mini-info">Equipe / consolidado</span>
+        </div>
+      </div>
 
-            // Mock de ícones para rodar no navegador sem pacotes complexos
-            const Trophy = () => <span className="text-2xl">🏆</span>;
-            const TrendingUp = () => <span className="text-emerald-500">📈</span>;
-            const CheckCircle = () => <span className="text-blue-500">✅</span>;
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">ECOS total</span>
+          <span class="kpi-value" id="totalEcosView">R$ 0,00</span>
+          <span class="mini-info">Acumulado ECOS</span>
+        </div>
+      </div>
 
-            const handleIncrement = (id, field, amount) => {
-                setSellers(prev => prev.map(s => 
-                    s.id === id ? { ...s, [field]: Math.max(0, s[field] + amount) } : s
-                ));
-            };
+      <div class="card span-8">
+        <h2>Painel de metas</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="metaPessoal">Meta pessoal de Guilherme</label>
+            <input type="number" id="metaPessoal" step="0.01" value="6800" />
+          </div>
+          <div class="field">
+            <label for="participacaoMed">Participação sobre MED da equipe (%)</label>
+            <input type="number" id="participacaoMed" step="0.01" value="15" />
+          </div>
+          <div class="field">
+            <label for="totalGuilherme">Total atual de vendas próprias</label>
+            <input type="number" id="totalGuilherme" step="0.01" value="0" />
+          </div>
+          <div class="field">
+            <label for="totalMed">MED total da equipe</label>
+            <input type="number" id="totalMed" step="0.01" value="0" />
+          </div>
+          <div class="field">
+            <label for="totalEcos">ECOS total</label>
+            <input type="number" id="totalEcos" step="0.01" value="0" />
+          </div>
+          <div class="field">
+            <label for="metaObservacao">Observação rápida</label>
+            <input type="text" id="metaObservacao" placeholder="Ex.: foco em ticket de 250+" />
+          </div>
+        </div>
 
-            const topSales = useMemo(() => [...sellers].sort((a, b) => b.sales - a.sales), [sellers]);
+        <div class="actions">
+          <button class="btn-primary" onclick="atualizarPainel()">Atualizar painel</button>
+          <button class="btn-secondary" onclick="salvarDados()">Salvar no navegador</button>
+          <button class="btn-secondary" onclick="carregarDados()">Recarregar dados</button>
+        </div>
 
-            return (
-                <div className="max-w-4xl mx-auto p-6 space-y-10">
-                    <header className="flex justify-between items-center bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-2xl">
-                        <div>
-                            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Ranking <span className="text-emerald-500">Comercial</span></h1>
-                            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Painel de Performance</p>
-                        </div>
-                    </header>
+        <div class="progress-wrap">
+          <h3>Progresso da meta principal</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" id="barraMeta"></div>
+          </div>
+          <div class="progress-label" id="textoMeta">0% da meta atingida</div>
+        </div>
 
-                    {/* Pódio Simples */}
-                    <div className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 h-80 flex items-end justify-center gap-4">
-                        {topSales[1] && (
-                            <div className="flex flex-col items-center w-24">
-                                <span className="text-[10px] font-bold mb-2">{topSales[1].name}</span>
-                                <div className="w-full bg-slate-800 h-32 rounded-t-xl flex items-center justify-center border-t-2 border-slate-600">
-                                    <span className="text-xl font-bold opacity-20">02</span>
-                                </div>
-                            </div>
-                        )}
-                        {topSales[0] && (
-                            <div className="flex flex-col items-center w-32">
-                                <span className="text-xs font-black text-yellow-500 mb-2 uppercase">{topSales[0].name}</span>
-                                <div className="w-full bg-emerald-500 h-48 rounded-t-xl flex flex-col items-center justify-center border-t-4 border-emerald-300 shadow-2xl">
-                                    <Trophy />
-                                    <span className="text-4xl font-black italic text-emerald-950">01</span>
-                                </div>
-                            </div>
-                        )}
-                        {topSales[2] && (
-                            <div className="flex flex-col items-center w-24">
-                                <span className="text-[10px] font-bold mb-2">{topSales[2].name}</span>
-                                <div className="w-full bg-slate-800/50 h-20 rounded-t-xl flex items-center justify-center border-t-2 border-slate-700">
-                                    <span className="text-lg font-bold opacity-10">03</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+        <div class="result-box" id="resumoMeta"></div>
+      </div>
 
-                    {/* Gestão */}
-                    <div className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-xl space-y-4">
-                        <h2 className="font-bold text-xl mb-6 flex items-center gap-2">📝 Gestão de Equipa</h2>
-                        {sellers.map(s => (
-                            <div key={s.id} className="flex flex-col md:flex-row items-center gap-
+      <div class="card span-4">
+        <h2>Insights automáticos</h2>
+        <div class="insights" id="insights"></div>
+      </div>
+
+      <div class="card span-6">
+        <h2>Calculadora de comissão</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="valorVenda">Valor da venda</label>
+            <input type="number" id="valorVenda" step="0.01" placeholder="Ex.: 250" />
+          </div>
+          <div class="field">
+            <label for="tipoVenda">Tipo</label>
+            <select id="tipoVenda">
+              <option value="MED">MED</option>
+              <option value="ECOS">ECOS</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="vendedorVenda">Quem vendeu</label>
+            <select id="vendedorVenda">
+              <option value="Guilherme">Guilherme</option>
+              <option value="Luiz">Luiz</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="divisaoComissao">Divisão de comissão (%)</label>
+            <input type="number" id="divisaoComissao" step="0.01" value="50" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" onclick="calcularComissao()">Calcular</button>
+        </div>
+
+        <div class="result-box" id="resultadoComissao">
+          Preencha os campos para calcular o impacto da venda.
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2>Simulador de fechamento</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="simVenda1">Venda simulada 1</label>
+            <input type="number" id="simVenda1" step="0.01" placeholder="Ex.: 250" />
+          </div>
+          <div class="field">
+            <label for="simVenda2">Venda simulada 2</label>
+            <input type="number" id="simVenda2" step="0.01" placeholder="Ex.: 210" />
+          </div>
+          <div class="field">
+            <label for="simVenda3">Venda simulada 3</label>
+            <input type="number" id="simVenda3" step="0.01" placeholder="Ex.: 450" />
+          </div>
+          <div class="field">
+            <label for="simTipo">Aplicar no tipo</label>
+            <select id="simTipo">
+              <option value="GUILHERME">Meta pessoal</option>
+              <option value="MED">MED total</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" onclick="simularFechamento()">Simular</button>
+        </div>
+
+        <div class="result-box" id="resultadoSimulador">
+          Faça uma simulação para ver se bate a meta e quanto ainda faltaria.
+        </div>
+      </div>
+
+      <div class="card span-12">
+        <h2>Histórico de vendas</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="histData">Data</label>
+            <input type="date" id="histData" />
+          </div>
+          <div class="field">
+            <label for="histCliente">Cliente</label>
+            <input type="text" id="histCliente" placeholder="Nome do cliente" />
+          </div>
+          <div class="field">
+            <label for="histValor">Valor</label>
+            <input type="number" id="histValor" step="0.01" placeholder="Ex.: 250" />
+          </div>
+          <div class="field">
+            <label for="histTipo">Tipo</label>
+            <select id="histTipo">
+              <option value="MED">MED</option>
+              <option value="ECOS">ECOS</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="histVendedor">Vendedor</label>
+            <select id="histVendedor">
+              <option value="Guilherme">Guilherme</option>
+              <option value="Luiz">Luiz</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="histObs">Observação</label>
+            <input type="text" id="histObs" placeholder="Ex.: aditivo, concretizado, lead quente" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" onclick="adicionarVenda()">Adicionar venda</button>
+          <button class="btn-danger" onclick="limparHistorico()">Limpar histórico</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Valor</th>
+              <th>Tipo</th>
+              <th>Vendedor</th>
+              <th>Observação</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="historicoTabela"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Dica: este HTML salva seus dados no navegador com localStorage. Se abrir em outro navegador ou limpar os dados, será preciso cadastrar novamente.
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'dashboardComercialGuilherme';
+
+    const estadoInicial = {
+      metaPessoal: 6800,
+      participacaoMed: 15,
+      totalGuilherme: 0,
+      totalMed: 0,
+      totalEcos: 0,
+      metaObservacao: '',
+      historico: []
+    };
+
+    let estado = { ...estadoInicial };
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
+
+    function hojeISO() {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+      const dia = String(hoje.getDate()).padStart(2, '0');
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function lerCamposPainel() {
+      estado.metaPessoal = Number(document.getElementById('metaPessoal').value || 0);
+      estado.participacaoMed = Number(document.getElementById('participacaoMed').value || 0);
+      estado.totalGuilherme = Number(document.getElementById('totalGuilherme').value || 0);
+      estado.totalMed = Number(document.getElementById('totalMed').value || 0);
+      estado.totalEcos = Number(document.getElementById('totalEcos').value || 0);
+      estado.metaObservacao = document.getElementById('metaObservacao').value || '';
+    }
+
+    function preencherCamposPainel() {
+      document.getElementById('metaPessoal').value = estado.metaPessoal;
+      document.getElementById('participacaoMed').value = estado.participacaoMed;
+      document.getElementById('totalGuilherme').value = estado.totalGuilherme;
+      document.getElementById('totalMed').value = estado.totalMed;
+      document.getElementById('totalEcos').value = estado.totalEcos;
+      document.getElementById('metaObservacao').value = estado.metaObservacao || '';
+    }
+
+    function calcularBaseMeta() {
+      const bonusMed = estado.totalMed * (estado.participacaoMed / 100);
+      const totalConsiderado = estado.totalGuilherme + bonusMed;
+      const falta = Math.max(estado.metaPessoal - totalConsiderado, 0);
+      const percentual = estado.metaPessoal > 0 ? (totalConsiderado / estado.metaPessoal) * 100 : 0;
+
+      return {
+        bonusMed,
+        totalConsiderado,
+        falta,
+        percentual
+      };
+    }
+
+    function atualizarPainel() {
+      lerCamposPainel();
+      renderizarTudo();
+    }
+
+    function renderizarTudo() {
+      const { bonusMed, totalConsiderado, falta, percentual } = calcularBaseMeta();
+
+      document.getElementById('metaPessoalView').textContent = formatarMoeda(estado.metaPessoal);
+      document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
+      document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
+      document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
+
+      const percentualLimitado = Math.min(percentual, 100);
+      document.getElementById('barraMeta').style.width = `${percentualLimitado}%`;
+      document.getElementById('textoMeta').textContent = `${percentual.toFixed(1)}% da meta atingida`;
+
+      document.getElementById('resumoMeta').innerHTML = `
+        <strong>Resumo da meta:</strong><br>
+        Vendas próprias: <strong>${formatarMoeda(estado.totalGuilherme)}</strong><br>
+        Participação sobre MED (${estado.participacaoMed}%): <strong>${formatarMoeda(bonusMed)}</strong><br>
+        Total considerado na meta: <strong>${formatarMoeda(totalConsiderado)}</strong><br>
+        Falta para bater a meta: <strong>${formatarMoeda(falta)}</strong><br>
+        ECOS atual: <strong>${formatarMoeda(estado.totalEcos)}</strong><br>
+        ${estado.metaObservacao ? `Observação: <strong>${estado.metaObservacao}</strong>` : 'Sem observação cadastrada.'}
+      `;
+
+      document.getElementById('statusResumo').textContent = falta <= 0
+        ? 'Meta batida'
+        : `Faltam ${formatarMoeda(falta)}`;
+
+      gerarInsights(falta, bonusMed, totalConsiderado, percentual);
+      renderizarHistorico();
+    }
+
+    function gerarInsights(falta, bonusMed, totalConsiderado, percentual) {
+      const insights = [];
+
+      if (falta <= 0) {
+        insights.push('Excelente. Sua meta principal já está batida. Agora o foco pode ser ampliar margem e buscar o melhor mês do período.');
+      } else {
+        insights.push(`Ainda faltam ${formatarMoeda(falta)} para fechar a meta principal.`);
+
+        const vendas250 = Math.ceil(falta / 250);
+        const vendas210 = Math.ceil(falta / 210);
+        insights.push(`Estratégia rápida: você pode buscar ${vendas250} venda(s) de R$ 250,00 ou ${vendas210} venda(s) de R$ 210,00.`);
+      }
+
+      if (bonusMed > 0) {
+        insights.push(`Sua participação sobre o MED já soma ${formatarMoeda(bonusMed)} no cálculo atual.`);
+      }
+
+      if (percentual < 70) {
+        insights.push('Fase de aceleração: priorize leads mais quentes e tickets médios acima de R$ 200,00.');
+      } else if (percentual < 100) {
+        insights.push('Você está perto. O ideal agora é focar fechamento e follow-up curto com prazo.');
+      } else {
+        insights.push('Com a meta batida, use o painel para puxar crescimento e organizar o próximo ciclo.');
+      }
+
+      if (estado.totalEcos > 0) {
+        insights.push(`ECOS acumulado em ${formatarMoeda(estado.totalEcos)}. Vale acompanhar se há espaço para empurrar complementos ou aditivos.`);
+      }
+
+      const container = document.getElementById('insights');
+      container.innerHTML = insights.map(item => `<div class="insight-item">${item}</div>`).join('');
+    }
+
+    function calcularComissao() {
+      const valor = Number(document.getElementById('valorVenda').value || 0);
+      const tipo = document.getElementById('tipoVenda').value;
+      const vendedor = document.getElementById('vendedorVenda').value;
+      const divisao = Number(document.getElementById('divisaoComissao').value || 0);
+
+      if (valor <= 0) {
+        document.getElementById('resultadoComissao').innerHTML = 'Informe um valor válido para a venda.';
+        return;
+      }
+
+      const parteDividida = valor * (divisao / 100);
+      const parteRestante = valor - parteDividida;
+      const ganhoDireto = vendedor === 'Guilherme' ? valor : 0;
+      const impactoMeta = tipo === 'MED' && vendedor !== 'Guilherme'
+        ? valor * (estado.participacaoMed / 100)
+        : vendedor === 'Guilherme'
+          ? valor + (tipo === 'MED' ? valor * (estado.participacaoMed / 100) : 0)
+          : 0;
+
+      document.getElementById('resultadoComissao').innerHTML = `
+        <strong>Resultado da simulação:</strong><br>
+        Valor da venda: <strong>${formatarMoeda(valor)}</strong><br>
+        Tipo: <strong>${tipo}</strong><br>
+        Vendedor: <strong>${vendedor}</strong><br>
+        Divisão configurada: <strong>${divisao.toFixed(2)}%</strong><br>
+        Parte dividida: <strong>${formatarMoeda(parteDividida)}</strong><br>
+        Parte restante: <strong>${formatarMoeda(parteRestante)}</strong><br>
+        Ganho direto de Guilherme nesta lógica: <strong>${formatarMoeda(ganhoDireto)}</strong><br>
+        Impacto estimado na meta de Guilherme: <strong>${formatarMoeda(impactoMeta)}</strong>
+      `;
+    }
+
+    function simularFechamento() {
+      const v1 = Number(document.getElementById('simVenda1').value || 0);
+      const v2 = Number(document.getElementById('simVenda2').value || 0);
+      const v3 = Number(document.getElementById('simVenda3').value || 0);
+      const tipo = document.getElementById('simTipo').value;
+
+      const soma = v1 + v2 + v3;
+      const base = calcularBaseMeta();
+
+      let atual = 0;
+      let alvo = 0;
+      let final = 0;
+
+      if (tipo === 'GUILHERME') {
+        atual = base.totalConsiderado;
+        alvo = estado.metaPessoal;
+        final = atual + soma;
+      } else {
+        atual = estado.totalMed;
+        alvo = estado.metaPessoal;
+        final = atual + soma;
+      }
+
+      const falta = Math.max(alvo - final, 0);
+      const bateu = final >= alvo;
+
+      document.getElementById('resultadoSimulador').innerHTML = `
+        <strong>Simulação:</strong><br>
+        Soma das vendas simuladas: <strong>${formatarMoeda(soma)}</strong><br>
+        Base atual: <strong>${formatarMoeda(atual)}</strong><br>
+        Resultado após fechamento: <strong>${formatarMoeda(final)}</strong><br>
+        Meta alvo considerada: <strong>${formatarMoeda(alvo)}</strong><br>
+        Status: <strong>${bateu ? 'Bate a meta' : 'Ainda não bate a meta'}</strong><br>
+        ${bateu ? 'Excelente cenário para empurrar resultado.' : `Ainda faltariam <strong>${formatarMoeda(falta)}</strong>.`}
+      `;
+    }
+
+    function adicionarVenda() {
+      const data = document.getElementById('histData').value || hojeISO();
+      const cliente = document.getElementById('histCliente').value.trim();
+      const valor = Number(document.getElementById('histValor').value || 0);
+      const tipo = document.getElementById('histTipo').value;
+      const vendedor = document.getElementById('histVendedor').value;
+      const obs = document.getElementById('histObs').value.trim();
+
+      if (!cliente || valor <= 0) {
+        alert('Preencha pelo menos cliente e valor da venda.');
+        return;
+      }
+
+      const item = {
+        id: Date.now(),
+        data,
+        cliente,
+        valor,
+        tipo,
+        vendedor,
+        obs
+      };
+
+      estado.historico.unshift(item);
+
+      if (tipo === 'MED') {
+        estado.totalMed += valor;
+      } else if (tipo === 'ECOS') {
+        estado.totalEcos += valor;
+      }
+
+      if (vendedor === 'Guilherme') {
+        estado.totalGuilherme += valor;
+      }
+
+      preencherCamposPainel();
+      renderizarTudo();
+      salvarDados();
+      limparCamposHistorico();
+    }
+
+    function limparCamposHistorico() {
+      document.getElementById('histData').value = hojeISO();
+      document.getElementById('histCliente').value = '';
+      document.getElementById('histValor').value = '';
+      document.getElementById('histTipo').value = 'MED';
+      document.getElementById('histVendedor').value = 'Guilherme';
+      document.getElementById('histObs').value = '';
+    }
+
+    function removerVenda(id) {
+      const item = estado.historico.find(v => v.id === id);
+      if (!item) return;
+
+      if (item.tipo === 'MED') {
+        estado.totalMed -= item.valor;
+      } else if (item.tipo === 'ECOS') {
+        estado.totalEcos -= item.valor;
+      }
+
+      if (item.vendedor === 'Guilherme') {
+        estado.totalGuilherme -= item.valor;
+      }
+
+      estado.historico = estado.historico.filter(v => v.id !== id);
+      preencherCamposPainel();
+      renderizarTudo();
+      salvarDados();
+    }
+
+    function renderizarHistorico() {
+      const tbody = document.getElementById('historicoTabela');
+
+      if (!estado.historico.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center; color: var(--muted); padding: 18px;">
+              Nenhuma venda cadastrada ainda.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = estado.historico.map(item => `
+        <tr>
+          <td>${formatarData(item.data)}</td>
+          <td>${item.cliente}</td>
+          <td>${formatarMoeda(item.valor)}</td>
+          <td><span class="pill ${item.tipo === 'MED' ? 'pill-med' : 'pill-ecos'}">${item.tipo}</span></td>
+          <td>${item.vendedor}</td>
+          <td>${item.obs || '-'}</td>
+          <td><button class="btn-danger" onclick="removerVenda(${item.id})">Excluir</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function formatarData(dataIso) {
+      if (!dataIso) return '-';
+      const [ano, mes, dia] = dataIso.split('-');
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function salvarDados() {
+      lerCamposPainel();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+      renderizarTudo();
+      alert('Dados salvos no navegador com sucesso.');
+    }
+
+    function carregarDados() {
+      const salvo = localStorage.getItem(STORAGE_KEY);
+      if (salvo) {
+        estado = { ...estadoInicial, ...JSON.parse(salvo) };
+      } else {
+        estado = { ...estadoInicial };
+      }
+
+      preencherCamposPainel();
+      renderizarTudo();
+      limparCamposHistorico();
+    }
+
+    function limparHistorico() {
+      const confirmado = confirm('Tem certeza que deseja apagar todo o histórico?');
+      if (!confirmado) return;
+
+      estado.historico = [];
+      estado.totalGuilherme = 0;
+      estado.totalMed = 0;
+      estado.totalEcos = 0;
+      preencherCamposPainel();
+      renderizarTudo();
+      salvarDados();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarDados();
+      document.getElementById('histData').value = hojeISO();
+    });
+  </script>
+</body>
+</html>
