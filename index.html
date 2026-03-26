@@ -343,11 +343,11 @@
         <div class="form-grid">
           <div class="field">
             <label for="metaPessoal">Meta pessoal de Guilherme</label>
-            <input type="number" id="metaPessoal" step="0.01" value="6800" />
+            <input type="number" id="metaPessoal" step="0.01" value="7000" readonly />
           </div>
           <div class="field">
-            <label for="participacaoMed">Participação sobre MED da equipe (%)</label>
-            <input type="number" id="participacaoMed" step="0.01" value="15" />
+            <label for="participacaoMed">Participação sobre MED + ECOS da equipe (%)</label>
+            <input type="number" id="participacaoMed" step="0.01" value="15" readonly />
           </div>
           <div class="field">
             <label for="totalGuilherme">Total atual de vendas próprias</label>
@@ -399,7 +399,7 @@
     const STORAGE_KEY = 'dashboardComercialGuilherme';
 
     const estadoInicial = {
-      metaPessoal: 6800,
+      metaPessoal: 7000,
       participacaoMed: 15,
       totalGuilherme: 0,
       totalMed: 0,
@@ -436,7 +436,8 @@
     }
 
     function calcularBaseMeta() {
-      const bonusMed = estado.totalMed * (estado.participacaoMed / 100);
+      const baseEquipe = estado.totalMed + estado.totalEcos;
+      const bonusMed = baseEquipe * (estado.participacaoMed / 100);
       const totalConsiderado = estado.totalGuilherme + bonusMed;
       const falta = Math.max(estado.metaPessoal - totalConsiderado, 0);
       const percentual = estado.metaPessoal > 0 ? (totalConsiderado / estado.metaPessoal) * 100 : 0;
@@ -447,16 +448,29 @@
         falta,
         percentual
       };
-  
+    }
+
+    function atualizarPainel() {
+      lerCamposPainel();
+      renderizarTudo();
+    }
+
+    function renderizarTudo() {
+      const { bonusMed, totalConsiderado, falta, percentual } = calcularBaseMeta();
 
       document.getElementById('metaPessoalView').textContent = formatarMoeda(estado.metaPessoal);
       document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
-      document.getElementById('totalMedView').tformatarMoeda(estado.totalMed);
+      document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
       document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
 
       const percentualLimitado = Math.min(percentual, 100);
-      document.getElementById('barr Vendas próprias: <strong>${formatarMoeda(estado.totalGuilherme)}</strong><br>
-        Participação sobre MED (${estado.participacaoMed}%): <strong>${formatarMoeda(bonusMed)}</strong><br>
+      document.getElementById('barraMeta').style.width = `${percentualLimitado}%`;
+      document.getElementById('textoMeta').textContent = `${percentual.toFixed(1)}% da meta atingida`;
+
+      document.getElementById('resumoMeta').innerHTML = `
+        <strong>Resumo da meta:</strong><br>
+        Vendas próprias: <strong>${formatarMoeda(estado.totalGuilherme)}</strong><br>
+        Participação sobre MED + ECOS (${estado.participacaoMed}%): <strong>${formatarMoeda(bonusMed)}</strong><br>
         Total considerado na meta: <strong>${formatarMoeda(totalConsiderado)}</strong><br>
         Falta para bater a meta: <strong>${formatarMoeda(falta)}</strong><br>
         ECOS atual: <strong>${formatarMoeda(estado.totalEcos)}</strong><br>
@@ -520,7 +534,6 @@
 
       preencherCamposPainel();
       renderizarTudo();
-      limparCamposHistorico();
     }
 
     function limparHistorico() {
@@ -536,8 +549,8 @@
       salvarDados();
     }
 
-    document.addEventListener('DOMCoarregarDados();
-      document.getElementById('histData').value = hojeISO();
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarDados();
     });
   </script>
 </body>
