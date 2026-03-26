@@ -5,95 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consolidado de Bancas 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .lucro-positivo { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; }
+        .lucro-negativo { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
+    </style>
 </head>
 <body class="bg-black text-gray-200 p-4 md:p-8 font-sans">
 
     <div class="max-w-6xl mx-auto">
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-2xl">
+        <div id="headerDinamico" class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-2xl transition-all duration-500">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                
+                <div class="text-center md:text-left border-r border-gray-800 pr-8">
+                    <h1 class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-1">Banca Inicial Total</h1>
+                    <input type="text" id="bancaInicialInput" oninput="configurarBancaInicial(event)"
+                        class="bg-transparent text-2xl font-mono font-bold text-blue-400 outline-none w-40">
+                </div>
+
                 <div class="text-center md:text-left">
-                    <h1 class="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-1">Performance Global</h1>
-                    <p id="totalGeral" class="text-4xl font-mono font-bold text-white">R$ 0,00</p>
+                    <h1 class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-1">Saldo Total Atual</h1>
+                    <p id="totalGeral" class="text-4xl font-mono font-bold text-white uppercase">R$ 0,00</p>
                 </div>
                 
                 <div class="flex gap-8 border-l border-gray-800 pl-8">
                     <div>
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Lucro Total</p>
-                        <p id="lucroGeral" class="text-2xl font-mono text-green-400">R$ 0,00</p>
+                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Lucro Líquido</p>
+                        <p id="lucroGeral" class="text-2xl font-mono">R$ 0,00</p>
                     </div>
                     <div>
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">ROI Geral</p>
-                        <p id="roiGeral" class="text-2xl font-mono text-green-400">0%</p>
+                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">ROI Geral</p>
+                        <p id="roiGeral" class="text-2xl font-mono">0%</p>
                     </div>
                 </div>
 
-                <button onclick="adicionarConta()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg text-xs font-bold transition-all uppercase tracking-widest">
+                <button onclick="adicionarConta()" class="bg-white hover:bg-gray-200 text-black px-6 py-3 rounded-lg text-xs font-bold transition-all uppercase tracking-widest">
                     + Nova Conta
                 </button>
             </div>
         </div>
 
-        <div id="gridContas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
+        <div id="gridContas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
     <script>
-        const BANCA_TOTAL_INICIAL = 5000;
+        // Carrega banca inicial ou define 5000 como padrão
+        let BANCA_TOTAL_INICIAL = parseFloat(localStorage.getItem('banca_base')) || 5000;
+        
         let contas = JSON.parse(localStorage.getItem('minhasContas_v2')) || [
-            { id: Date.now(), nome: 'BETANO - EVERTON', saldo: 2500 },
-            { id: Date.now() + 1, nome: 'BETANO - LUIZ', saldo: 2500 }
+            { id: 1, nome: 'BETANO - EVERTON', saldo: 2500 },
+            { id: 2, nome: 'BETANO - LUIZ', saldo: 2500 }
         ];
+
+        function configurarBancaInicial(event) {
+            let v = event.target.value.replace(/\D/g, '');
+            v = (v / 100).toFixed(2);
+            BANCA_TOTAL_INICIAL = parseFloat(v) || 0;
+            localStorage.setItem('banca_base', BANCA_TOTAL_INICIAL);
+            
+            // Aplica máscara visual no input de banca
+            event.target.value = "R$ " + formatarStringMoeda(v);
+            atualizarConsolidado();
+        }
+
+        function formatarStringMoeda(valor) {
+            let v = valor.replace(".", ",");
+            v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+            v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
+            return v;
+        }
 
         function salvar() {
             localStorage.setItem('minhasContas_v2', JSON.stringify(contas));
             atualizarConsolidado();
         }
 
-        function adicionarConta() {
-            const nome = prompt("Nome da Conta:");
-            if (nome) {
-                contas.push({ id: Date.now(), nome: nome.toUpperCase(), saldo: 0 });
-                salvar();
-                renderizar();
-            }
-        }
-
-        function removerConta(id) {
-            if (confirm("Excluir esta conta?")) {
-                contas = contas.filter(c => c.id !== id);
-                salvar();
-                renderizar();
-            }
-        }
-
         function atualizarConsolidado() {
             const totalSoma = contas.reduce((acc, c) => acc + c.saldo, 0);
             const lucroTotal = totalSoma - BANCA_TOTAL_INICIAL;
-            const roiTotal = (lucroTotal / BANCA_TOTAL_INICIAL) * 100;
+            const roiTotal = BANCA_TOTAL_INICIAL > 0 ? (lucroTotal / BANCA_TOTAL_INICIAL) * 100 : 0;
 
             document.getElementById('totalGeral').innerText = totalSoma.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             
             const lucroEl = document.getElementById('lucroGeral');
             const roiEl = document.getElementById('roiGeral');
+            const header = document.getElementById('headerDinamico');
             
             lucroEl.innerText = lucroTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             roiEl.innerText = `${roiTotal.toFixed(2)}%`;
 
-            const cor = lucroTotal >= 0 ? "text-green-400" : "text-red-500";
-            lucroEl.className = `text-2xl font-mono ${cor}`;
-            roiEl.className = `text-2xl font-mono ${cor}`;
+            // Cores e Efeitos
+            if (lucroTotal > 0) {
+                lucroEl.className = "text-2xl font-mono text-green-400";
+                roiEl.className = "text-2xl font-mono text-green-400";
+                header.className = "bg-gray-900 border rounded-xl p-6 mb-8 shadow-2xl transition-all duration-500 lucro-positivo";
+            } else if (lucroTotal < 0) {
+                lucroEl.className = "text-2xl font-mono text-red-500";
+                roiEl.className = "text-2xl font-mono text-red-500";
+                header.className = "bg-gray-900 border rounded-xl p-6 mb-8 shadow-2xl transition-all duration-500 lucro-negativo";
+            } else {
+                lucroEl.className = "text-2xl font-mono text-gray-400";
+                roiEl.className = "text-2xl font-mono text-gray-400";
+                header.className = "bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-2xl transition-all duration-500";
+            }
         }
 
         function mascaraMoeda(event, id) {
             let v = event.target.value.replace(/\D/g, '');
             v = (v / 100).toFixed(2) + '';
-            v = v.replace(".", ",");
-            v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
-            v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
-            event.target.value = "R$ " + v;
+            const valorNumerico = parseFloat(v);
+            event.target.value = "R$ " + formatarStringMoeda(v);
             
-            // Atualiza saldo no array
-            const valorNumerico = parseFloat(v.replace(/\./g, '').replace(',', '.'));
             const index = contas.findIndex(c => c.id === id);
             contas[index].saldo = valorNumerico;
             salvar();
@@ -102,25 +123,16 @@
         function renderizar() {
             const grid = document.getElementById('gridContas');
             grid.innerHTML = '';
+            
+            // Inicializa o input de banca inicial com o valor salvo
+            const inputBanca = document.getElementById('bancaInicialInput');
+            inputBanca.value = "R$ " + formatarStringMoeda(BANCA_TOTAL_INICIAL.toFixed(2));
 
             contas.forEach(conta => {
-                const saldoFormatado = conta.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                const saldoFormatado = formatarStringMoeda(conta.saldo.toFixed(2));
                 grid.innerHTML += `
-                    <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl hover:border-gray-600 transition-colors relative">
+                    <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl relative">
                         <button onclick="removerConta(${conta.id})" class="absolute top-4 right-4 text-gray-700 hover:text-red-500">✕</button>
                         <h3 class="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-4">${conta.nome}</h3>
-                        <label class="block text-[9px] text-gray-500 uppercase mb-1">Saldo em Conta</label>
-                        <input type="text" 
-                            value="R$ ${saldoFormatado}"
-                            oninput="mascaraMoeda(event, ${conta.id})"
-                            class="bg-transparent border-b border-gray-800 focus:border-blue-500 outline-none w-full text-3xl font-mono text-white pb-2 transition-all">
-                    </div>
-                `;
-            });
-            atualizarConsolidado();
-        }
-
-        renderizar();
-    </script>
-</body>
-</html>
+                        <input type="text" value="R$ ${saldoFormatado}" oninput="mascaraMoeda(event, ${conta.id})"
+                            class="bg-transparent border-b border-gray
