@@ -1,273 +1,73 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard Comercial</title>
-
-<style>
-:root{
-  --bg:#0b1220;
-  --card:#111827;
-  --card-2:#0f172a;
-  --border:rgba(255,255,255,.06);
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --primary:#22c55e;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Inter, Arial;
-}
-
-body{
-  background:linear-gradient(135deg,#0b1220,#0f172a);
-  color:var(--text);
-  padding:30px;
-}
-
-.container{
-  max-width:1100px;
-  margin:auto;
-}
-
-h1{
-  margin-bottom:20px;
-}
-
-/* CARDS */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-}
-
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
-}
-
-.kpi-label{
-  color:var(--muted);
-  font-size:.85rem;
-}
-
-.kpi-value{
-  font-size:1.6rem;
-  font-weight:bold;
-  margin-top:4px;
-}
-
-/* BLOCO PRINCIPAL */
-.main{
-  margin-top:20px;
-  background:var(--card-2);
-  padding:22px;
-  border-radius:18px;
-  border:1px solid var(--border);
-}
-
-/* INPUTS */
-.field{
-  margin-bottom:16px;
-}
-
-label{
-  display:block;
-  margin-bottom:6px;
-  color:var(--muted);
-  font-size:.9rem;
-}
-
-.input-wrap{
-  display:flex;
-  align-items:center;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:12px;
-}
-
-.prefix{
-  margin-right:6px;
-  color:var(--muted);
-}
-
-input{
-  background:transparent;
-  border:none;
-  outline:none;
-  color:var(--text);
-  font-size:1rem;
-  width:100%;
-}
-
-/* BOTÃO */
-button{
-  margin-top:10px;
-  padding:12px 18px;
-  border:none;
-  background:var(--primary);
-  color:#052e16;
-  border-radius:12px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-/* PROGRESSO */
-.progress{
-  margin-top:16px;
-  height:10px;
-  background:#1f2937;
-  border-radius:10px;
-}
-
-.bar{
-  height:10px;
-  width:0%;
-  background:var(--primary);
-  border-radius:10px;
-}
-
-/* RESULTADO */
-.result{
-  margin-top:16px;
-  line-height:1.6;
-  font-size:.95rem;
-}
-
-/* RESPONSIVO */
-@media(max-width:900px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Banca - 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-900 text-gray-100 p-4 font-sans">
 
-<body>
+    <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
+        <h1 class="text-xl font-bold uppercase tracking-wider">Gestão de Banca</h1>
+        <div class="text-sm text-gray-400">Banca Inicial: <span class="text-green-400 font-mono">R$ 5.000,00</span></div>
+    </div>
 
-<div class="container">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-gray-800 p-4 rounded shadow-sm border-l-4 border-blue-500">
+            <p class="text-xs text-gray-400 uppercase">Saldo Atual</p>
+            <input type="number" id="saldoAtual" oninput="calcularLucro()" placeholder="R$ 0,00" 
+                class="bg-transparent text-2xl font-mono focus:outline-none w-full">
+        </div>
 
-<h1>Dashboard Comercial</h1>
+        <div class="bg-gray-800 p-4 rounded shadow-sm border-l-4 border-green-500">
+            <p class="text-xs text-gray-400 uppercase">Lucro para Retirada</p>
+            <p id="lucroFinal" class="text-2xl font-mono text-green-400">R$ 0,00</p>
+        </div>
 
-<div class="grid">
-  <div class="card">
-    <div class="kpi-label">Meta</div>
-    <div class="kpi-value" id="meta">R$ 7.000,00</div>
-  </div>
+        <div class="bg-gray-800 p-4 rounded shadow-sm border-l-4 border-purple-500">
+            <p class="text-xs text-gray-400 uppercase">ROI Mensal</p>
+            <p id="roi" class="text-2xl font-mono text-purple-400">0%</p>
+        </div>
+    </div>
 
-  <div class="card">
-    <div class="kpi-label">Guilherme</div>
-    <div class="kpi-value" id="guilherme">R$ 0,00</div>
-  </div>
+    <div class="bg-gray-800 rounded overflow-hidden">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                <tr>
+                    <th class="p-3">Data</th>
+                    <th class="p-3">Evento</th>
+                    <th class="p-3 text-right">Resultado</th>
+                </tr>
+            </thead>
+            <tbody id="historicoCorpo">
+                <tr class="border-b border-gray-700">
+                    <td class="p-3 text-gray-400">26/03/2026</td>
+                    <td class="p-3 italic">Exemplo de Entrada</td>
+                    <td class="p-3 text-right text-green-400 font-mono">+ R$ 150,00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-  <div class="card">
-    <div class="kpi-label">MED</div>
-    <div class="kpi-value" id="med">R$ 0,00</div>
-  </div>
+    <script>
+        function calcularLucro() {
+            const bancaInicial = 5000;
+            const saldoAtual = document.getElementById('saldoAtual').value;
+            const lucroField = document.getElementById('lucroFinal');
+            const roiField = document.getElementById('roi');
 
-  <div class="card">
-    <div class="kpi-label">ECOS</div>
-    <div class="kpi-value" id="ecos">R$ 0,00</div>
-  </div>
-</div>
+            if (saldoAtual) {
+                const lucro = saldoAtual - bancaInicial;
+                const roi = (lucro / bancaInicial) * 100;
 
-<div class="main">
+                lucroField.innerText = `R$ ${lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                roiField.innerText = `${roi.toFixed(2)}%`;
 
-<div class="field">
-  <label>Guilherme</label>
-  <div class="input-wrap">
-    <span class="prefix">R$</span>
-    <input id="g" value="0,00">
-  </div>
-</div>
-
-<div class="field">
-  <label>MED</label>
-  <div class="input-wrap">
-    <span class="prefix">R$</span>
-    <input id="m" value="0,00">
-  </div>
-</div>
-
-<div class="field">
-  <label>ECOS</label>
-  <div class="input-wrap">
-    <span class="prefix">R$</span>
-    <input id="e" value="0,00">
-  </div>
-</div>
-
-<button onclick="calc()">Atualizar</button>
-
-<div class="progress">
-  <div class="bar" id="bar"></div>
-</div>
-
-<div class="result" id="res"></div>
-
-</div>
-
-</div>
-
-<script>
-const META = 7000;
-
-function moeda(v){
-  return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-}
-
-function limpar(v){
-  return Number(v.replace(/\./g,'').replace(',','.'))||0;
-}
-
-function mask(input){
-  input.addEventListener('input',()=>{
-    let v = input.value.replace(/\D/g,'');
-
-    if(!v){
-      input.value='';
-      return;
-    }
-
-    v=(v/100).toFixed(2);
-    v=v.replace('.',',');
-    v=v.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-
-    input.value=v;
-  })
-}
-
-function calc(){
-  let g=limpar(document.getElementById('g').value);
-  let m=limpar(document.getElementById('m').value);
-  let e=limpar(document.getElementById('e').value);
-
-  let bonus=(m+e)*0.15;
-  let total=g+bonus;
-  let falta=Math.max(META-total,0);
-  let pct=(total/META)*100;
-
-  document.getElementById('guilherme').innerText=moeda(g);
-  document.getElementById('med').innerText=moeda(m);
-  document.getElementById('ecos').innerText=moeda(e);
-
-  document.getElementById('bar').style.width=pct+"%";
-
-  document.getElementById('res').innerHTML =
-    `Total: <b>${moeda(total)}</b><br>
-     Falta: <b>${moeda(falta)}</b>`;
-}
-
-mask(document.getElementById('g'));
-mask(document.getElementById('m'));
-mask(document.getElementById('e'));
-</script>
-
+                // Muda cor se estiver no prejuízo
+                lucroField.className = lucro >= 0 ? "text-2xl font-mono text-green-400" : "text-2xl font-mono text-red-400";
+            }
+        }
+    </script>
 </body>
 </html>
