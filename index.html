@@ -1,128 +1,471 @@
-<script>
-const STORAGE_KEY = 'dashboardComercialGuilherme';
-
-const estadoInicial = {
-  metaPessoal: 7000,
-  participacaoMed: 15,
-  totalGuilherme: 0,
-  totalMed: 0,
-  totalEcos: 0,
-  metaObservacao: ''
-};
-
-let estado = { ...estadoInicial };
-
-function formatarMoeda(valor) {
-  return Number(valor || 0).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  });
-}
-
-// 🔥 limpa valor formatado (1.250,50 → 1250.50)
-function limparNumero(valor) {
-  if (!valor) return 0;
-  return Number(valor.replace(/\./g, '').replace(',', '.')) || 0;
-}
-
-// 🔥 máscara tipo banco
-function mascaraMoeda(campo) {
-  campo.addEventListener('input', function () {
-    let valor = campo.value.replace(/\D/g, '');
-
-    if (!valor) {
-      campo.value = '';
-      return;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Comercial Inteligente</title>
+  <style>
+    :root {
+      --card: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #22c55e;
+      --primary-soft: rgba(34, 197, 94, 0.15);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      --radius: 18px;
     }
 
-    valor = (parseInt(valor) / 100).toFixed(2);
-    valor = valor.replace('.', ',');
-    valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-    campo.value = valor;
-  });
-}
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #111827 45%, #1e293b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
 
-// ativa máscara
-function ativarMascaras() {
-  mascaraMoeda(document.getElementById('totalGuilherme'));
-  mascaraMoeda(document.getElementById('totalMed'));
-  mascaraMoeda(document.getElementById('totalEcos'));
-}
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-function lerCamposPainel() {
-  estado.totalGuilherme = limparNumero(document.getElementById('totalGuilherme').value);
-  estado.totalMed = limparNumero(document.getElementById('totalMed').value);
-  estado.totalEcos = limparNumero(document.getElementById('totalEcos').value);
-  estado.metaObservacao = document.getElementById('metaObservacao').value || '';
-}
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
 
-function preencherCamposPainel() {
-  document.getElementById('metaPessoal').value = estado.metaPessoal;
-  document.getElementById('participacaoMed').value = estado.participacaoMed;
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
 
-  document.getElementById('totalGuilherme').value = estado.totalGuilherme.toLocaleString('pt-BR', {minimumFractionDigits:2});
-  document.getElementById('totalMed').value = estado.totalMed.toLocaleString('pt-BR', {minimumFractionDigits:2});
-  document.getElementById('totalEcos').value = estado.totalEcos.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    .header p {
+      color: var(--muted);
+    }
 
-  document.getElementById('metaObservacao').value = estado.metaObservacao || '';
-}
+    .status-badge {
+      background: var(--primary-soft);
+      color: #86efac;
+      border: 1px solid rgba(134, 239, 172, 0.2);
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: bold;
+    }
 
-// 🔥 regra real
-function calcularBaseMeta() {
-  const baseEquipe = estado.totalMed + estado.totalEcos;
-  const bonus = baseEquipe * 0.15;
-  const total = estado.totalGuilherme + bonus;
-  const falta = Math.max(estado.metaPessoal - total, 0);
-  const percentual = (total / estado.metaPessoal) * 100;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
 
-  return { bonus, total, falta, percentual };
-}
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
 
-function atualizarPainel() {
-  lerCamposPainel();
-  renderizarTudo();
-}
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
 
-function renderizarTudo() {
-  const { bonus, total, falta, percentual } = calcularBaseMeta();
+    .card h3 {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: normal;
+    }
 
-  document.getElementById('metaPessoalView').textContent = formatarMoeda(estado.metaPessoal);
-  document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
-  document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
-  document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
+    .span-8 { grid-column: span 8; }
+    .span-3 { grid-column: span 3; }
 
-  document.getElementById('barraMeta').style.width = Math.min(percentual, 100) + "%";
-  document.getElementById('textoMeta').textContent = percentual.toFixed(1) + "% da meta atingida";
+    .kpi {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-  document.getElementById('resumoMeta').innerHTML = `
-    <strong>Resumo:</strong><br>
-    Vendas: <b>${formatarMoeda(estado.totalGuilherme)}</b><br>
-    Bônus 15%: <b>${formatarMoeda(bonus)}</b><br>
-    Total: <b>${formatarMoeda(total)}</b><br>
-    Falta: <b>${formatarMoeda(falta)}</b>
-  `;
+    .kpi-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
 
-  document.getElementById('statusResumo').textContent =
-    falta <= 0 ? "Meta batida" : "Faltam " + formatarMoeda(falta);
-}
+    .kpi-value {
+      font-size: 1.9rem;
+      font-weight: bold;
+    }
 
-function salvarDados() {
-  lerCamposPainel();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
-  renderizarTudo();
-}
+    .mini-info {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
 
-function carregarDados() {
-  const salvo = localStorage.getItem(STORAGE_KEY);
-  estado = salvo ? { ...estadoInicial, ...JSON.parse(salvo) } : { ...estadoInicial };
+    .progress-wrap {
+      margin-top: 12px;
+    }
 
-  preencherCamposPainel();
-  renderizarTudo();
-}
+    .progress-bar {
+      width: 100%;
+      height: 13px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-  ativarMascaras();
-  carregarDados();
-});
-</script>
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-label {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .field input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 12px;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .field input[readonly] {
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #052e16;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: var(--text);
+    }
+
+    .result-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      .span-8, .span-3 {
+        grid-column: span 12;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Dashboard Comercial Inteligente</h1>
+        <p>Painel visual para acompanhar sua meta.</p>
+      </div>
+      <div class="status-badge" id="statusResumo">Carregando dados...</div>
+    </div>
+
+    <div class="grid">
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">Meta pessoal</span>
+          <span class="kpi-value" id="metaPessoalView">R$ 7.000,00</span>
+          <span class="mini-info">Meta fixa de Guilherme</span>
+        </div>
+      </div>
+
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">Total Guilherme</span>
+          <span class="kpi-value" id="totalGuilhermeView">R$ 0,00</span>
+          <span class="mini-info">Vendas próprias acumuladas</span>
+        </div>
+      </div>
+
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">MED total</span>
+          <span class="kpi-value" id="totalMedView">R$ 0,00</span>
+          <span class="mini-info">Equipe / consolidado</span>
+        </div>
+      </div>
+
+      <div class="card span-3">
+        <div class="kpi">
+          <span class="kpi-label">ECOS total</span>
+          <span class="kpi-value" id="totalEcosView">R$ 0,00</span>
+          <span class="mini-info">Acumulado ECOS</span>
+        </div>
+      </div>
+
+      <div class="card span-8">
+        <h2>Painel de metas</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="metaPessoal">Meta pessoal de Guilherme</label>
+            <input type="text" id="metaPessoal" value="7.000,00" readonly />
+          </div>
+
+          <div class="field">
+            <label for="participacaoMed">Participação sobre MED + ECOS (%)</label>
+            <input type="text" id="participacaoMed" value="15" readonly />
+          </div>
+
+          <div class="field">
+            <label for="totalGuilherme">Total atual de vendas próprias</label>
+            <input type="text" id="totalGuilherme" value="0,00" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="totalMed">MED total da equipe</label>
+            <input type="text" id="totalMed" value="0,00" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="totalEcos">ECOS total</label>
+            <input type="text" id="totalEcos" value="0,00" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="metaObservacao">Observação rápida</label>
+            <input type="text" id="metaObservacao" placeholder="Ex.: foco em ticket de 250+" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" onclick="atualizarPainel()">Atualizar painel</button>
+          <button class="btn-secondary" onclick="salvarDados()">Salvar no navegador</button>
+          <button class="btn-secondary" onclick="carregarDados()">Recarregar dados</button>
+        </div>
+
+        <div class="progress-wrap">
+          <h3>Progresso da meta principal</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" id="barraMeta"></div>
+          </div>
+          <div class="progress-label" id="textoMeta">0% da meta atingida</div>
+        </div>
+
+        <div class="result-box" id="resumoMeta"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'dashboardComercialGuilherme';
+    const META_PESSOAL = 7000;
+    const PARTICIPACAO = 15;
+
+    const estadoInicial = {
+      totalGuilherme: 0,
+      totalMed: 0,
+      totalEcos: 0,
+      metaObservacao: ''
+    };
+
+    let estado = { ...estadoInicial };
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
+
+    function formatarNumeroBR(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function limparNumero(valor) {
+      if (!valor) return 0;
+      return Number(String(valor).replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    function aplicarMascaraMoeda(input) {
+      input.addEventListener('input', function (e) {
+        let valor = e.target.value.replace(/\D/g, '');
+
+        if (!valor) {
+          e.target.value = '';
+          return;
+        }
+
+        valor = (Number(valor) / 100).toFixed(2);
+        valor = valor.replace('.', ',');
+        valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        e.target.value = valor;
+      });
+
+      input.addEventListener('blur', function (e) {
+        if (!e.target.value.trim()) {
+          e.target.value = '0,00';
+        }
+      });
+    }
+
+    function inicializarMascaras() {
+      ['totalGuilherme', 'totalMed', 'totalEcos'].forEach(function (id) {
+        const campo = document.getElementById(id);
+        if (campo) {
+          aplicarMascaraMoeda(campo);
+        }
+      });
+    }
+
+    function lerCamposPainel() {
+      estado.totalGuilherme = limparNumero(document.getElementById('totalGuilherme').value);
+      estado.totalMed = limparNumero(document.getElementById('totalMed').value);
+      estado.totalEcos = limparNumero(document.getElementById('totalEcos').value);
+      estado.metaObservacao = document.getElementById('metaObservacao').value || '';
+    }
+
+    function preencherCamposPainel() {
+      document.getElementById('metaPessoal').value = formatarNumeroBR(META_PESSOAL);
+      document.getElementById('participacaoMed').value = String(PARTICIPACAO);
+      document.getElementById('totalGuilherme').value = formatarNumeroBR(estado.totalGuilherme);
+      document.getElementById('totalMed').value = formatarNumeroBR(estado.totalMed);
+      document.getElementById('totalEcos').value = formatarNumeroBR(estado.totalEcos);
+      document.getElementById('metaObservacao').value = estado.metaObservacao || '';
+    }
+
+    function calcularBaseMeta() {
+      const baseEquipe = estado.totalMed + estado.totalEcos;
+      const bonus = baseEquipe * (PARTICIPACAO / 100);
+      const totalConsiderado = estado.totalGuilherme + bonus;
+      const falta = Math.max(META_PESSOAL - totalConsiderado, 0);
+      const percentual = META_PESSOAL > 0 ? (totalConsiderado / META_PESSOAL) * 100 : 0;
+
+      return {
+        bonus,
+        totalConsiderado,
+        falta,
+        percentual
+      };
+    }
+
+    function renderizarTudo() {
+      const dados = calcularBaseMeta();
+
+      document.getElementById('metaPessoalView').textContent = formatarMoeda(META_PESSOAL);
+      document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
+      document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
+      document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
+      document.getElementById('barraMeta').style.width = Math.min(dados.percentual, 100) + '%';
+      document.getElementById('textoMeta').textContent = dados.percentual.toFixed(1) + '% da meta atingida';
+
+      document.getElementById('resumoMeta').innerHTML =
+        '<strong>Resumo da meta:</strong><br>' +
+        'Vendas próprias: <strong>' + formatarMoeda(estado.totalGuilherme) + '</strong><br>' +
+        'Bônus de 15% sobre MED + ECOS: <strong>' + formatarMoeda(dados.bonus) + '</strong><br>' +
+        'Total considerado: <strong>' + formatarMoeda(dados.totalConsiderado) + '</strong><br>' +
+        'Falta para bater a meta: <strong>' + formatarMoeda(dados.falta) + '</strong><br>' +
+        (estado.metaObservacao
+          ? 'Observação: <strong>' + estado.metaObservacao + '</strong>'
+          : 'Sem observação cadastrada.');
+
+      document.getElementById('statusResumo').textContent =
+        dados.falta <= 0 ? 'Meta batida' : 'Faltam ' + formatarMoeda(dados.falta);
+    }
+
+    function atualizarPainel() {
+      lerCamposPainel();
+      renderizarTudo();
+    }
+
+    function salvarDados() {
+      lerCamposPainel();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+      renderizarTudo();
+      alert('Dados salvos no navegador com sucesso.');
+    }
+
+    function carregarDados() {
+      const salvo = localStorage.getItem(STORAGE_KEY);
+
+      if (salvo) {
+        estado = { ...estadoInicial, ...JSON.parse(salvo) };
+      } else {
+        estado = { ...estadoInicial };
+      }
+
+      preencherCamposPainel();
+      renderizarTudo();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      inicializarMascaras();
+      carregarDados();
+    });
+  </script>
+</body>
+</html>
