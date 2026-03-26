@@ -3,57 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Financeiro Apostas</title>
+    <title>Gestão de Bancas Profissional</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Brilho suave para cards com saldo ativo */
+        .card-ativo { 
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); 
+            border-color: rgba(59, 130, 246, 0.4) !important; 
+        }
+        /* Esconder setas de input number em alguns browsers */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .transition-all { transition: all 0.3s ease; }
+    </style>
 </head>
 <body class="bg-black text-gray-200 p-4 md:p-10 font-sans">
 
-    <div class="max-w-5xl mx-auto">
-        <div id="headerDinamico" class="bg-gray-900 border border-gray-800 rounded-2xl p-8 mb-10 shadow-2xl transition-all duration-500">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-center">
+    <div class="max-w-6xl mx-auto">
+        <div id="headerDinamico" class="bg-gray-900 border border-gray-800 rounded-2xl p-8 mb-10 shadow-2xl transition-all border-t-4">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-center">
                 
-                <div class="md:col-span-1 border-r border-gray-800 pr-4">
-                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Investimento Inicial</p>
+                <div class="lg:col-span-1 border-r border-gray-800 pr-4">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Banca Inicial Total</p>
                     <input type="text" id="bancaInicialInput" 
+                        onfocus="this.select()"
                         class="bg-transparent text-2xl font-mono font-bold text-blue-400 outline-none w-full">
                 </div>
 
-                <div class="md:col-span-1">
-                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Saldo Total Atual</p>
-                    <p id="totalGeral" class="text-3xl font-mono font-bold text-white">R$ 0,00</p>
+                <div class="lg:col-span-1">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Saldo Consolidado</p>
+                    <p id="totalGeral" class="text-3xl font-mono font-bold text-white tracking-tighter">R$ 0,00</p>
                 </div>
                 
-                <div class="md:col-span-1 flex flex-col gap-1">
+                <div class="lg:col-span-1 flex flex-col gap-1">
                     <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Lucro Líquido</p>
                     <p id="lucroGeral" class="text-2xl font-mono">R$ 0,00</p>
                 </div>
 
-                <div class="md:col-span-1 flex flex-col items-end">
-                    <button onclick="adicionarConta()" class="bg-white hover:bg-gray-200 text-black px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all w-full md:w-auto">
-                        + Nova Conta
+                <div class="lg:col-span-1 flex flex-col sm:flex-row gap-2 justify-end">
+                    <button onclick="adicionarConta()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        + Conta
+                    </button>
+                    <button onclick="resetarMes()" class="border border-red-900 text-red-500 hover:bg-red-900 hover:text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        Resetar Mês
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="gridContas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="gridContas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             </div>
     </div>
 
     <script>
-        // Inicialização de dados
-        let bancaBase = parseFloat(localStorage.getItem('banca_base_v3')) || 5000;
-        let contas = JSON.parse(localStorage.getItem('contas_v3')) || [
-            { id: 1, nome: 'BETANO - EVERTON', saldo: 2500 },
-            { id: 2, nome: 'BETANO - LUIZ', saldo: 2500 }
+        // Memória do App
+        let bancaBase = parseFloat(localStorage.getItem('banca_base_v4')) || 5000;
+        let contas = JSON.parse(localStorage.getItem('contas_v4')) || [
+            { id: 1, nome: 'BETANO - EVERTON', saldo: 0 }
         ];
 
-        // Formatação de Moeda para Exibição
         function formatarParaReal(valor) {
             return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        // Máscara de entrada (estilo banco)
         function aplicarMascara(valorString) {
             let v = valorString.replace(/\D/g, '');
             v = (v / 100).toFixed(2);
@@ -63,20 +75,23 @@
         function atualizarInterface() {
             const grid = document.getElementById('gridContas');
             grid.innerHTML = '';
-
             let somaTotalAtivos = 0;
 
             contas.forEach(conta => {
                 somaTotalAtivos += conta.saldo;
                 
                 const card = document.createElement('div');
-                card.className = "bg-gray-900 border border-gray-800 p-6 rounded-xl relative hover:border-blue-900 transition-all";
+                const destaqueAtivo = conta.saldo > 0 ? "card-ativo" : "";
+                card.className = `bg-gray-900 border border-gray-800 p-6 rounded-xl relative transition-all hover:border-blue-500 ${destaqueAtivo}`;
+                
                 card.innerHTML = `
-                    <button onclick="removerConta(${conta.id})" class="absolute top-4 right-4 text-gray-700 hover:text-red-500">✕</button>
+                    <button onclick="removerConta(${conta.id})" class="absolute top-4 right-4 text-gray-700 hover:text-red-500 transition-colors">✕</button>
                     <h3 class="text-blue-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">${conta.nome}</h3>
+                    <p class="text-[9px] text-gray-600 uppercase mb-1">Saldo em Conta</p>
                     <input type="text" value="${formatarParaReal(conta.saldo)}" 
+                        onfocus="this.select()"
                         oninput="inputConta(event, ${conta.id})"
-                        class="bg-transparent border-b border-gray-800 focus:border-blue-500 outline-none w-full text-2xl font-mono text-white pb-2">
+                        class="bg-transparent border-b border-gray-800 focus:border-blue-500 outline-none w-full text-2xl font-mono text-white pb-2 transition-all">
                 `;
                 grid.appendChild(card);
             });
@@ -85,65 +100,23 @@
             const lucroTotal = somaTotalAtivos - bancaBase;
             const roiTotal = bancaBase > 0 ? (lucroTotal / bancaBase) * 100 : 0;
 
-            // Atualiza Header
+            // Update Header
             document.getElementById('totalGeral').innerText = formatarParaReal(somaTotalAtivos);
             const lucroEl = document.getElementById('lucroGeral');
             lucroEl.innerText = formatarParaReal(lucroTotal);
             
-            // Cores
+            // Cores Dinâmicas do Header
             const header = document.getElementById('headerDinamico');
             if (lucroTotal > 0) {
                 lucroEl.className = "text-2xl font-mono text-green-400 font-bold";
-                header.style.borderColor = "#16a34a";
+                header.style.borderTopColor = "#22c55e"; // Verde
             } else if (lucroTotal < 0) {
                 lucroEl.className = "text-2xl font-mono text-red-500 font-bold";
-                header.style.borderColor = "#dc2626";
+                header.style.borderTopColor = "#ef4444"; // Vermelho
             } else {
                 lucroEl.className = "text-2xl font-mono text-gray-400";
-                header.style.borderColor = "#1f2937";
+                header.style.borderTopColor = "#1f2937"; // Cinza
             }
 
-            // Salva dados
-            localStorage.setItem('contas_v3', JSON.stringify(contas));
-            localStorage.setItem('banca_base_v3', bancaBase);
-        }
-
-        // Eventos de Input
-        function inputConta(e, id) {
-            const valorLimpo = aplicarMascara(e.target.value);
-            const index = contas.findIndex(c => c.id === id);
-            contas[index].saldo = parseFloat(valorLimpo);
-            e.target.value = formatarParaReal(contas[index].saldo);
-            atualizarInterface();
-        }
-
-        function inputBancaBase(e) {
-            const valorLimpo = aplicarMascara(e.target.value);
-            bancaBase = parseFloat(valorLimpo);
-            e.target.value = formatarParaReal(bancaBase);
-            atualizarInterface();
-        }
-
-        function adicionarConta() {
-            const nome = prompt("Nome da Conta:");
-            if (nome) {
-                contas.push({ id: Date.now(), nome: nome.toUpperCase(), saldo: 0 });
-                atualizarInterface();
-            }
-        }
-
-        function removerConta(id) {
-            if (confirm("Excluir conta?")) {
-                contas = contas.filter(c => c.id !== id);
-                atualizarInterface();
-            }
-        }
-
-        // Inicialização
-        document.getElementById('bancaInicialInput').value = formatarParaReal(bancaBase);
-        document.getElementById('bancaInicialInput').addEventListener('input', inputBancaBase);
-        atualizarInterface();
-
-    </script>
-</body>
-</html>
+            // Salva no Navegador
+            localStorage
