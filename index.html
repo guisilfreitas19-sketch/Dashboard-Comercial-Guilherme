@@ -3,71 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Banca - 2026</title>
+    <title>Saldo do Dia</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-gray-100 p-4 font-sans">
+<body class="bg-black text-white flex items-center justify-center h-screen font-sans">
 
-    <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
-        <h1 class="text-xl font-bold uppercase tracking-wider">Gestão de Banca</h1>
-        <div class="text-sm text-gray-400">Banca Inicial: <span class="text-green-400 font-mono">R$ 5.000,00</span></div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-gray-800 p-4 rounded shadow-sm border-l-4 border-blue-500">
-            <p class="text-xs text-gray-400 uppercase">Saldo Atual</p>
-            <input type="number" id="saldoAtual" oninput="calcularLucro()" placeholder="R$ 0,00" 
-                class="bg-transparent text-2xl font-mono focus:outline-none w-full">
+    <div class="w-full max-w-md p-6 bg-gray-900 rounded-lg border border-gray-800 shadow-2xl text-center">
+        <h2 class="text-gray-500 uppercase text-xs tracking-widest mb-2">Banca Inicial: R$ 5.000,00</h2>
+        
+        <div class="mb-8">
+            <label class="block text-sm text-gray-400 mb-2 italic">Insira o saldo atual da conta:</label>
+            <input type="number" id="saldoInput" step="0.01" placeholder="0,00"
+                class="bg-transparent text-5xl font-mono text-center w-full focus:outline-none border-b border-gray-700 pb-2 text-blue-400">
         </div>
 
-        <div class="bg-gray-800 p-4 rounded shadow-sm border-l-4 border-green-500">
-            <p class="text-xs text-gray-400 uppercase">Lucro para Retirada</p>
-            <p id="lucroFinal" class="text-2xl font-mono text-green-400">R$ 0,00</p>
-        </div>
+        <hr class="border-gray-800 mb-8">
 
-        <div class="bg-gray-800 p-4 rounded shadow-sm border-l-4 border-purple-500">
-            <p class="text-xs text-gray-400 uppercase">ROI Mensal</p>
-            <p id="roi" class="text-2xl font-mono text-purple-400">0%</p>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="text-left">
+                <p class="text-[10px] text-gray-500 uppercase font-bold">Lucro/Prejuízo</p>
+                <p id="lucroFinal" class="text-2xl font-mono tracking-tighter">R$ 0,00</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-500 uppercase font-bold">Rendimento</p>
+                <p id="roi" class="text-2xl font-mono tracking-tighter">0%</p>
+            </div>
         </div>
-    </div>
-
-    <div class="bg-gray-800 rounded overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
-                <tr>
-                    <th class="p-3">Data</th>
-                    <th class="p-3">Evento</th>
-                    <th class="p-3 text-right">Resultado</th>
-                </tr>
-            </thead>
-            <tbody id="historicoCorpo">
-                <tr class="border-b border-gray-700">
-                    <td class="p-3 text-gray-400">26/03/2026</td>
-                    <td class="p-3 italic">Exemplo de Entrada</td>
-                    <td class="p-3 text-right text-green-400 font-mono">+ R$ 150,00</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 
     <script>
-        function calcularLucro() {
-            const bancaInicial = 5000;
-            const saldoAtual = document.getElementById('saldoAtual').value;
-            const lucroField = document.getElementById('lucroFinal');
-            const roiField = document.getElementById('roi');
+        const input = document.getElementById('saldoInput');
+        const lucroTxt = document.getElementById('lucroFinal');
+        const roiTxt = document.getElementById('roi');
+        const BANCA_INICIAL = 5000;
 
-            if (saldoAtual) {
-                const lucro = saldoAtual - bancaInicial;
-                const roi = (lucro / bancaInicial) * 100;
-
-                lucroField.innerText = `R$ ${lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                roiField.innerText = `${roi.toFixed(2)}%`;
-
-                // Muda cor se estiver no prejuízo
-                lucroField.className = lucro >= 0 ? "text-2xl font-mono text-green-400" : "text-2xl font-mono text-red-400";
+        // Carregar dado salvo ao abrir
+        window.onload = () => {
+            const salvo = localStorage.getItem('ultimoSaldo');
+            if (salvo) {
+                input.value = salvo;
+                atualizar();
             }
+        };
+
+        function atualizar() {
+            const valor = parseFloat(input.value) || 0;
+            const lucro = valor - BANCA_INICIAL;
+            const roi = (lucro / BANCA_INICIAL) * 100;
+
+            // Atualiza Textos
+            lucroTxt.innerText = `R$ ${lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            roiTxt.innerText = `${roi.toFixed(2)}%`;
+
+            // Cores Dinâmicas
+            lucroTxt.className = lucro >= 0 ? "text-2xl font-mono text-green-500" : "text-2xl font-mono text-red-500";
+            roiTxt.className = lucro >= 0 ? "text-2xl font-mono text-green-500" : "text-2xl font-mono text-red-500";
+
+            // Salva no Navegador
+            localStorage.setItem('ultimoSaldo', input.value);
         }
+
+        input.addEventListener('input', atualizar);
     </script>
 </body>
 </html>
