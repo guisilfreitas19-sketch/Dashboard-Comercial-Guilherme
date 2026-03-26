@@ -1,557 +1,119 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Comercial Inteligente</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-soft: #1f2937;
-      --card: rgba(255, 255, 255, 0.04);
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --primary: #22c55e;
-      --primary-soft: rgba(34, 197, 94, 0.15);
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --info: #38bdf8;
-      --shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-      --radius: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #0f172a 0%, #111827 45%, #1e293b 100%);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-
-    .header h1 {
-      font-size: 2rem;
-      margin-bottom: 6px;
-    }
-
-    .header p {
-      color: var(--muted);
-    }
-
-    .status-badge {
-      background: var(--primary-soft);
-      color: #86efac;
-      border: 1px solid rgba(134, 239, 172, 0.2);
-      padding: 12px 16px;
-      border-radius: 999px;
-      font-weight: bold;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 18px;
-    }
-
-    .card {
-      background: var(--card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 20px;
-    }
-
-    .card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 14px;
-    }
-
-    .card h3 {
-      font-size: 0.95rem;
-      color: var(--muted);
-      margin-bottom: 10px;
-      font-weight: normal;
-    }
-
-    .span-12 { grid-column: span 12; }
-    .span-8 { grid-column: span 8; }
-    .span-6 { grid-column: span 6; }
-    .span-4 { grid-column: span 4; }
-    .span-3 { grid-column: span 3; }
-
-    .kpi {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .kpi-label {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .kpi-value {
-      font-size: 1.9rem;
-      font-weight: bold;
-    }
-
-    .mini-info {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .progress-wrap {
-      margin-top: 12px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 13px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #22c55e, #4ade80);
-      border-radius: 999px;
-      transition: width 0.3s ease;
-    }
-
-    .progress-label {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--text);
-      padding: 12px 14px;
-      border-radius: 12px;
-      outline: none;
-      font-size: 0.95rem;
-    }
-
-    .field textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-
-    button {
-      border: none;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      opacity: 0.95;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #052e16;
-    }
-
-    .btn-secondary {
-      background: #334155;
-      color: var(--text);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 12px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      font-size: 0.94rem;
-    }
-
-    th {
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-
-    .pill-med {
-      background: rgba(56, 189, 248, 0.15);
-      color: #7dd3fc;
-    }
-
-    .pill-ecos {
-      background: rgba(245, 158, 11, 0.14);
-      color: #fcd34d;
-    }
-
-    .insights {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .insight-item {
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      line-height: 1.5;
-    }
-
-    .result-box {
-      margin-top: 16px;
-      padding: 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      line-height: 1.6;
-    }
-
-    .footer-note {
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      text-align: center;
-    }
-
-    @media (max-width: 980px) {
-      .span-8, .span-6, .span-4, .span-3 {
-        grid-column: span 12;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div>
-        <h1>Dashboard Comercial Inteligente</h1>
-        <p>Painel completo para meta, comissão, simulação e histórico de vendas.</p>
-      </div>
-      <div class="status-badge" id="statusResumo">Carregando dados...</div>
-    </div>
-
-    <div class="grid">
-      <div class="card span-3">
-        <div class="kpi">
-          <span class="kpi-label">Meta pessoal</span>
-          <span class="kpi-value" id="metaPessoalView">R$ 6.800,00</span>
-          <span class="mini-info">Meta principal de Guilherme</span>
-        </div>
-      </div>
-
-      <div class="card span-3">
-        <div class="kpi">
-          <span class="kpi-label">Total Guilherme</span>
-          <span class="kpi-value" id="totalGuilhermeView">R$ 0,00</span>
-          <span class="mini-info">Vendas próprias acumuladas</span>
-        </div>
-      </div>
-
-      <div class="card span-3">
-        <div class="kpi">
-          <span class="kpi-label">MED total</span>
-          <span class="kpi-value" id="totalMedView">R$ 0,00</span>
-          <span class="mini-info">Equipe / consolidado</span>
-        </div>
-      </div>
-
-      <div class="card span-3">
-        <div class="kpi">
-          <span class="kpi-label">ECOS total</span>
-          <span class="kpi-value" id="totalEcosView">R$ 0,00</span>
-          <span class="mini-info">Acumulado ECOS</span>
-        </div>
-      </div>
-
-      <div class="card span-8">
-        <h2>Painel de metas</h2>
-        <div class="form-grid">
-          <div class="field">
-            <label for="metaPessoal">Meta pessoal de Guilherme</label>
-            <input type="number" id="metaPessoal" step="0.01" value="7000" readonly />
-          </div>
-          <div class="field">
-            <label for="participacaoMed">Participação sobre MED + ECOS da equipe (%)</label>
-            <input type="number" id="participacaoMed" step="0.01" value="15" readonly />
-          </div>
-          <div class="field">
-            <label for="totalGuilherme">Total atual de vendas próprias</label>
-            <input type="number" id="totalGuilherme" step="0.01" value="0" />
-          </div>
-          <div class="field">
-            <label for="totalMed">MED total da equipe</label>
-            <input type="number" id="totalMed" step="0.01" value="0" />
-          </div>
-          <div class="field">
-            <label for="totalEcos">ECOS total</label>
-            <input type="number" id="totalEcos" step="0.01" value="0" />
-          </div>
-          <div class="field">
-            <label for="metaObservacao">Observação rápida</label>
-            <input type="text" id="metaObservacao" placeholder="Ex.: foco em ticket de 250+" />
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn-primary" onclick="atualizarPainel()">Atualizar painel</button>
-          <button class="btn-secondary" onclick="salvarDados()">Salvar no navegador</button>
-          <button class="btn-secondary" onclick="carregarDados()">Recarregar dados</button>
-        </div>
-
-        <div class="progress-wrap">
-          <h3>Progresso da meta principal</h3>
-          <div class="progress-bar">
-            <div class="progress-fill" id="barraMeta"></div>
-          </div>
-          <div class="progress-label" id="textoMeta">0% da meta atingida</div>
-        </div>
-
-        <div class="result-box" id="resumoMeta"></div>
-      </div>
-
-      <div class="card span-4">
-        <h2>Insights automáticos</h2>
-        <div class="insights" id="insights"></div>
-      </div>
-
-      
-    </div>
-
-    
-  </div>
-
-  <script>
-    const STORAGE_KEY = 'dashboardComercialGuilherme';
-
-    const estadoInicial = {
-      metaPessoal: 7000,
-      participacaoMed: 15,
-      totalGuilherme: 0,
-      totalMed: 0,
-      totalEcos: 0,
-      metaObservacao: '',
-      historico: []
-    };
-
-    let estado = { ...estadoInicial };
-
-    function formatarMoeda(valor) {
-      return Number(valor || 0).toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-    }
-
-    function lerCamposPainel() {
-      estado.metaPessoal = Number(document.getElementById('metaPessoal').value || 0);
-      estado.participacaoMed = Number(document.getElementById('participacaoMed').value || 0);
-      estado.totalGuilherme = Number(document.getElementById('totalGuilherme').value || 0);
-      estado.totalMed = Number(document.getElementById('totalMed').value || 0);
-      estado.totalEcos = Number(document.getElementById('totalEcos').value || 0);
-      estado.metaObservacao = document.getElementById('metaObservacao').value || '';
-    }
-
-    function preencherCamposPainel() {
-      document.getElementById('metaPessoal').value = estado.metaPessoal;
-      document.getElementById('participacaoMed').value = estado.participacaoMed;
-      document.getElementById('totalGuilherme').value = estado.totalGuilherme;
-      document.getElementById('totalMed').value = estado.totalMed;
-      document.getElementById('totalEcos').value = estado.totalEcos;
-      document.getElementById('metaObservacao').value = estado.metaObservacao || '';
-    }
-
-    function calcularBaseMeta() {
-      const baseEquipe = estado.totalMed + estado.totalEcos;
-      const bonusMed = baseEquipe * (estado.participacaoMed / 100);
-      const totalConsiderado = estado.totalGuilherme + bonusMed;
-      const falta = Math.max(estado.metaPessoal - totalConsiderado, 0);
-      const percentual = estado.metaPessoal > 0 ? (totalConsiderado / estado.metaPessoal) * 100 : 0;
-
-      return {
-        bonusMed,
-        totalConsiderado,
-        falta,
-        percentual
-      };
-    }
-
-    function atualizarPainel() {
-      lerCamposPainel();
-      renderizarTudo();
-    }
-
-    function renderizarTudo() {
-      const { bonusMed, totalConsiderado, falta, percentual } = calcularBaseMeta();
-
-      document.getElementById('metaPessoalView').textContent = formatarMoeda(estado.metaPessoal);
-      document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
-      document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
-      document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
-
-      const percentualLimitado = Math.min(percentual, 100);
-      document.getElementById('barraMeta').style.width = `${percentualLimitado}%`;
-      document.getElementById('textoMeta').textContent = `${percentual.toFixed(1)}% da meta atingida`;
-
-      document.getElementById('resumoMeta').innerHTML = `
-        <strong>Resumo da meta:</strong><br>
-        Vendas próprias: <strong>${formatarMoeda(estado.totalGuilherme)}</strong><br>
-        Participação sobre MED + ECOS (${estado.participacaoMed}%): <strong>${formatarMoeda(bonusMed)}</strong><br>
-        Total considerado na meta: <strong>${formatarMoeda(totalConsiderado)}</strong><br>
-        Falta para bater a meta: <strong>${formatarMoeda(falta)}</strong><br>
-        ECOS atual: <strong>${formatarMoeda(estado.totalEcos)}</strong><br>
-        ${estado.metaObservacao ? `Observação: <strong>${estado.metaObservacao}</strong>` : 'Sem observação cadastrada.'}
-      `;
-
-      document.getElementById('statusResumo').textContent = falta <= 0
-        ? 'Meta batida'
-        : `Faltam ${formatarMoeda(falta)}`;
-
-      gerarInsights(falta, bonusMed, totalConsiderado, percentual);
-    }
-
-    function gerarInsights(falta, bonusMed, totalConsiderado, percentual) {
-      const insights = [];
-
-      if (falta <= 0) {
-        insights.push('Excelente. Sua meta principal já está batida. Agora o foco pode ser ampliar margem e buscar o melhor mês do período.');
-      } else {
-        insights.push(`Ainda faltam ${formatarMoeda(falta)} para fechar a meta principal.`);
-
-        const vendas250 = Math.ceil(falta / 250);
-        const vendas210 = Math.ceil(falta / 210);
-        insights.push(`Estratégia rápida: você pode buscar ${vendas250} venda(s) de R$ 250,00 ou ${vendas210} venda(s) de R$ 210,00.`);
-      }
-
-      if (bonusMed > 0) {
-        insights.push(`Sua participação sobre o MED já soma ${formatarMoeda(bonusMed)} no cálculo atual.`);
-      }
-
-      if (percentual < 70) {
-        insights.push('Fase de aceleração: priorize leads mais quentes e tickets médios acima de R$ 200,00.');
-      } else if (percentual < 100) {
-        insights.push('Você está perto. O ideal agora é focar fechamento e follow-up curto com prazo.');
-      } else {
-        insights.push('Com a meta batida, use o painel para puxar crescimento e organizar o próximo ciclo.');
-      }
-
-      if (estado.totalEcos > 0) {
-        insights.push(`ECOS acumulado em ${formatarMoeda(estado.totalEcos)}. Vale acompanhar se há espaço para empurrar complementos ou aditivos.`);
-      }
-
-      const container = document.getElementById('insights');
-      container.innerHTML = insights.map(item => `<div class="insight-item">${item}</div>`).join('');
-    }
-
-    function salvarDados() {
-      lerCamposPainel();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
-      renderizarTudo();
-      alert('Dados salvos no navegador com sucesso.');
-    }
-
-    function carregarDados() {
-      const salvo = localStorage.getItem(STORAGE_KEY);
-      if (salvo) {
-        estado = { ...estadoInicial, ...JSON.parse(salvo) };
-      } else {
-        estado = { ...estadoInicial };
-      }
-
-      preencherCamposPainel();
-      renderizarTudo();
-    }
-
-    function limparHistorico() {
-      const confirmado = confirm('Tem certeza que deseja apagar todo o histórico?');
-      if (!confirmado) return;
-
-      estado.historico = [];
-      estado.totalGuilherme = 0;
-      estado.totalMed = 0;
-      estado.totalEcos = 0;
-      preencherCamposPainel();
-      renderizarTudo();
-      salvarDados();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      carregarDados();
-    });
-  </script>
-</body>
-</html>
+<script>
+const STORAGE_KEY = 'dashboardComercialGuilherme';
+
+const estadoInicial = {
+  totalGuilherme: 0,
+  totalMed: 0,
+  totalEcos: 0,
+  metaObservacao: ''
+};
+
+let estado = { ...estadoInicial };
+
+function formatarMoeda(valor) {
+  return Number(valor || 0).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+}
+
+// 🔥 limpa valor formatado (ex: 1.250,50 → 1250.50)
+function limparNumero(valor) {
+  return Number(
+    valor.replace(/\./g, '').replace(',', '.')
+  ) || 0;
+}
+
+// 🔥 máscara tipo app de banco
+function aplicarMascaraMoeda(input) {
+  input.addEventListener('input', function (e) {
+    let valor = e.target.value.replace(/\D/g, '');
+
+    valor = (Number(valor) / 100).toFixed(2);
+
+    valor = valor.replace('.', ',');
+    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+
+    e.target.value = valor;
+  });
+}
+
+// 🔥 aplica nos campos certos
+function inicializarMascaras() {
+  ['totalGuilherme', 'totalMed', 'totalEcos'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) aplicarMascaraMoeda(el);
+  });
+}
+
+function lerCamposPainel() {
+  estado.totalGuilherme = limparNumero(document.getElementById('totalGuilherme').value || '0');
+  estado.totalMed = limparNumero(document.getElementById('totalMed').value || '0');
+  estado.totalEcos = limparNumero(document.getElementById('totalEcos').value || '0');
+  estado.metaObservacao = document.getElementById('metaObservacao').value || '';
+}
+
+function preencherCamposPainel() {
+  document.getElementById('totalGuilherme').value = formatarMoeda(estado.totalGuilherme).replace('R$', '').trim();
+  document.getElementById('totalMed').value = formatarMoeda(estado.totalMed).replace('R$', '').trim();
+  document.getElementById('totalEcos').value = formatarMoeda(estado.totalEcos).replace('R$', '').trim();
+  document.getElementById('metaObservacao').value = estado.metaObservacao || '';
+}
+
+// 🔥 regra REAL do seu negócio
+function calcularBaseMeta() {
+  const baseEquipe = estado.totalMed + estado.totalEcos;
+  const bonus = baseEquipe * 0.15;
+  const total = estado.totalGuilherme + bonus;
+  const falta = Math.max(7000 - total, 0);
+  const percentual = (total / 7000) * 100;
+
+  return { bonus, total, falta, percentual };
+}
+
+function atualizarPainel() {
+  lerCamposPainel();
+  renderizar();
+}
+
+function renderizar() {
+  const { bonus, total, falta, percentual } = calcularBaseMeta();
+
+  document.getElementById('metaPessoalView').textContent = formatarMoeda(7000);
+  document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
+  document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
+  document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
+
+  document.getElementById('barraMeta').style.width = `${Math.min(percentual, 100)}%`;
+  document.getElementById('textoMeta').textContent = `${percentual.toFixed(1)}% da meta atingida`;
+
+  document.getElementById('resumoMeta').innerHTML = `
+    Vendas próprias: <b>${formatarMoeda(estado.totalGuilherme)}</b><br>
+    Bônus (15% MED + ECOS): <b>${formatarMoeda(bonus)}</b><br>
+    Total considerado: <b>${formatarMoeda(total)}</b><br>
+    Falta: <b>${formatarMoeda(falta)}</b>
+  `;
+
+  document.getElementById('statusResumo').textContent =
+    falta <= 0 ? 'Meta batida' : `Faltam ${formatarMoeda(falta)}`;
+}
+
+function salvarDados() {
+  lerCamposPainel();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+  renderizar();
+}
+
+function carregarDados() {
+  const salvo = localStorage.getItem(STORAGE_KEY);
+  estado = salvo ? JSON.parse(salvo) : { ...estadoInicial };
+
+  preencherCamposPainel();
+  renderizar();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  inicializarMascaras();
+  carregarDados();
+});
+</script>
