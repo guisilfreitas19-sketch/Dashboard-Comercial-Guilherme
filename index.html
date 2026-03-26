@@ -389,137 +389,10 @@
         <div class="insights" id="insights"></div>
       </div>
 
-      <div class="card span-6">
-        <h2>Calculadora de comissão</h2>
-        <div class="form-grid">
-          <div class="field">
-            <label for="valorVenda">Valor da venda</label>
-            <input type="number" id="valorVenda" step="0.01" placeholder="Ex.: 250" />
-          </div>
-          <div class="field">
-            <label for="tipoVenda">Tipo</label>
-            <select id="tipoVenda">
-              <option value="MED">MED</option>
-              <option value="ECOS">ECOS</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="vendedorVenda">Quem vendeu</label>
-            <select id="vendedorVenda">
-              <option value="Guilherme">Guilherme</option>
-              <option value="Luiz">Luiz</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="divisaoComissao">Divisão de comissão (%)</label>
-            <input type="number" id="divisaoComissao" step="0.01" value="50" />
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn-primary" onclick="calcularComissao()">Calcular</button>
-        </div>
-
-        <div class="result-box" id="resultadoComissao">
-          Preencha os campos para calcular o impacto da venda.
-        </div>
-      </div>
-
-      <div class="card span-6">
-        <h2>Simulador de fechamento</h2>
-        <div class="form-grid">
-          <div class="field">
-            <label for="simVenda1">Venda simulada 1</label>
-            <input type="number" id="simVenda1" step="0.01" placeholder="Ex.: 250" />
-          </div>
-          <div class="field">
-            <label for="simVenda2">Venda simulada 2</label>
-            <input type="number" id="simVenda2" step="0.01" placeholder="Ex.: 210" />
-          </div>
-          <div class="field">
-            <label for="simVenda3">Venda simulada 3</label>
-            <input type="number" id="simVenda3" step="0.01" placeholder="Ex.: 450" />
-          </div>
-          <div class="field">
-            <label for="simTipo">Aplicar no tipo</label>
-            <select id="simTipo">
-              <option value="GUILHERME">Meta pessoal</option>
-              <option value="MED">MED total</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn-primary" onclick="simularFechamento()">Simular</button>
-        </div>
-
-        <div class="result-box" id="resultadoSimulador">
-          Faça uma simulação para ver se bate a meta e quanto ainda faltaria.
-        </div>
-      </div>
-
-      <div class="card span-12">
-        <h2>Histórico de vendas</h2>
-        <div class="form-grid">
-          <div class="field">
-            <label for="histData">Data</label>
-            <input type="date" id="histData" />
-          </div>
-          <div class="field">
-            <label for="histCliente">Cliente</label>
-            <input type="text" id="histCliente" placeholder="Nome do cliente" />
-          </div>
-          <div class="field">
-            <label for="histValor">Valor</label>
-            <input type="number" id="histValor" step="0.01" placeholder="Ex.: 250" />
-          </div>
-          <div class="field">
-            <label for="histTipo">Tipo</label>
-            <select id="histTipo">
-              <option value="MED">MED</option>
-              <option value="ECOS">ECOS</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="histVendedor">Vendedor</label>
-            <select id="histVendedor">
-              <option value="Guilherme">Guilherme</option>
-              <option value="Luiz">Luiz</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="histObs">Observação</label>
-            <input type="text" id="histObs" placeholder="Ex.: aditivo, concretizado, lead quente" />
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn-primary" onclick="adicionarVenda()">Adicionar venda</button>
-          <button class="btn-danger" onclick="limparHistorico()">Limpar histórico</button>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Cliente</th>
-              <th>Valor</th>
-              <th>Tipo</th>
-              <th>Vendedor</th>
-              <th>Observação</th>
-              <th>Ação</th>
-            </tr>
-          </thead>
-          <tbody id="historicoTabela"></tbody>
-        </table>
-      </div>
+      
     </div>
 
-    <div class="footer-note">
-      Dica: este HTML salva seus dados no navegador com localStorage. Se abrir em outro navegador ou limpar os dados, será preciso cadastrar novamente.
-    </div>
+    
   </div>
 
   <script>
@@ -542,14 +415,6 @@
         style: 'currency',
         currency: 'BRL'
       });
-    }
-
-    function hojeISO() {
-      const hoje = new Date();
-      const ano = hoje.getFullYear();
-      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-      const dia = String(hoje.getDate()).padStart(2, '0');
-      return `${ano}-${mes}-${dia}`;
     }
 
     function lerCamposPainel() {
@@ -582,28 +447,15 @@
         falta,
         percentual
       };
-    }
-
-    function atualizarPainel() {
-      lerCamposPainel();
-      renderizarTudo();
-    }
-
-    function renderizarTudo() {
-      const { bonusMed, totalConsiderado, falta, percentual } = calcularBaseMeta();
+  
 
       document.getElementById('metaPessoalView').textContent = formatarMoeda(estado.metaPessoal);
       document.getElementById('totalGuilhermeView').textContent = formatarMoeda(estado.totalGuilherme);
-      document.getElementById('totalMedView').textContent = formatarMoeda(estado.totalMed);
+      document.getElementById('totalMedView').tformatarMoeda(estado.totalMed);
       document.getElementById('totalEcosView').textContent = formatarMoeda(estado.totalEcos);
 
       const percentualLimitado = Math.min(percentual, 100);
-      document.getElementById('barraMeta').style.width = `${percentualLimitado}%`;
-      document.getElementById('textoMeta').textContent = `${percentual.toFixed(1)}% da meta atingida`;
-
-      document.getElementById('resumoMeta').innerHTML = `
-        <strong>Resumo da meta:</strong><br>
-        Vendas próprias: <strong>${formatarMoeda(estado.totalGuilherme)}</strong><br>
+      document.getElementById('barr Vendas próprias: <strong>${formatarMoeda(estado.totalGuilherme)}</strong><br>
         Participação sobre MED (${estado.participacaoMed}%): <strong>${formatarMoeda(bonusMed)}</strong><br>
         Total considerado na meta: <strong>${formatarMoeda(totalConsiderado)}</strong><br>
         Falta para bater a meta: <strong>${formatarMoeda(falta)}</strong><br>
@@ -616,7 +468,6 @@
         : `Faltam ${formatarMoeda(falta)}`;
 
       gerarInsights(falta, bonusMed, totalConsiderado, percentual);
-      renderizarHistorico();
     }
 
     function gerarInsights(falta, bonusMed, totalConsiderado, percentual) {
@@ -652,179 +503,6 @@
       container.innerHTML = insights.map(item => `<div class="insight-item">${item}</div>`).join('');
     }
 
-    function calcularComissao() {
-      const valor = Number(document.getElementById('valorVenda').value || 0);
-      const tipo = document.getElementById('tipoVenda').value;
-      const vendedor = document.getElementById('vendedorVenda').value;
-      const divisao = Number(document.getElementById('divisaoComissao').value || 0);
-
-      if (valor <= 0) {
-        document.getElementById('resultadoComissao').innerHTML = 'Informe um valor válido para a venda.';
-        return;
-      }
-
-      const parteDividida = valor * (divisao / 100);
-      const parteRestante = valor - parteDividida;
-      const ganhoDireto = vendedor === 'Guilherme' ? valor : 0;
-      const impactoMeta = tipo === 'MED' && vendedor !== 'Guilherme'
-        ? valor * (estado.participacaoMed / 100)
-        : vendedor === 'Guilherme'
-          ? valor + (tipo === 'MED' ? valor * (estado.participacaoMed / 100) : 0)
-          : 0;
-
-      document.getElementById('resultadoComissao').innerHTML = `
-        <strong>Resultado da simulação:</strong><br>
-        Valor da venda: <strong>${formatarMoeda(valor)}</strong><br>
-        Tipo: <strong>${tipo}</strong><br>
-        Vendedor: <strong>${vendedor}</strong><br>
-        Divisão configurada: <strong>${divisao.toFixed(2)}%</strong><br>
-        Parte dividida: <strong>${formatarMoeda(parteDividida)}</strong><br>
-        Parte restante: <strong>${formatarMoeda(parteRestante)}</strong><br>
-        Ganho direto de Guilherme nesta lógica: <strong>${formatarMoeda(ganhoDireto)}</strong><br>
-        Impacto estimado na meta de Guilherme: <strong>${formatarMoeda(impactoMeta)}</strong>
-      `;
-    }
-
-    function simularFechamento() {
-      const v1 = Number(document.getElementById('simVenda1').value || 0);
-      const v2 = Number(document.getElementById('simVenda2').value || 0);
-      const v3 = Number(document.getElementById('simVenda3').value || 0);
-      const tipo = document.getElementById('simTipo').value;
-
-      const soma = v1 + v2 + v3;
-      const base = calcularBaseMeta();
-
-      let atual = 0;
-      let alvo = 0;
-      let final = 0;
-
-      if (tipo === 'GUILHERME') {
-        atual = base.totalConsiderado;
-        alvo = estado.metaPessoal;
-        final = atual + soma;
-      } else {
-        atual = estado.totalMed;
-        alvo = estado.metaPessoal;
-        final = atual + soma;
-      }
-
-      const falta = Math.max(alvo - final, 0);
-      const bateu = final >= alvo;
-
-      document.getElementById('resultadoSimulador').innerHTML = `
-        <strong>Simulação:</strong><br>
-        Soma das vendas simuladas: <strong>${formatarMoeda(soma)}</strong><br>
-        Base atual: <strong>${formatarMoeda(atual)}</strong><br>
-        Resultado após fechamento: <strong>${formatarMoeda(final)}</strong><br>
-        Meta alvo considerada: <strong>${formatarMoeda(alvo)}</strong><br>
-        Status: <strong>${bateu ? 'Bate a meta' : 'Ainda não bate a meta'}</strong><br>
-        ${bateu ? 'Excelente cenário para empurrar resultado.' : `Ainda faltariam <strong>${formatarMoeda(falta)}</strong>.`}
-      `;
-    }
-
-    function adicionarVenda() {
-      const data = document.getElementById('histData').value || hojeISO();
-      const cliente = document.getElementById('histCliente').value.trim();
-      const valor = Number(document.getElementById('histValor').value || 0);
-      const tipo = document.getElementById('histTipo').value;
-      const vendedor = document.getElementById('histVendedor').value;
-      const obs = document.getElementById('histObs').value.trim();
-
-      if (!cliente || valor <= 0) {
-        alert('Preencha pelo menos cliente e valor da venda.');
-        return;
-      }
-
-      const item = {
-        id: Date.now(),
-        data,
-        cliente,
-        valor,
-        tipo,
-        vendedor,
-        obs
-      };
-
-      estado.historico.unshift(item);
-
-      if (tipo === 'MED') {
-        estado.totalMed += valor;
-      } else if (tipo === 'ECOS') {
-        estado.totalEcos += valor;
-      }
-
-      if (vendedor === 'Guilherme') {
-        estado.totalGuilherme += valor;
-      }
-
-      preencherCamposPainel();
-      renderizarTudo();
-      salvarDados();
-      limparCamposHistorico();
-    }
-
-    function limparCamposHistorico() {
-      document.getElementById('histData').value = hojeISO();
-      document.getElementById('histCliente').value = '';
-      document.getElementById('histValor').value = '';
-      document.getElementById('histTipo').value = 'MED';
-      document.getElementById('histVendedor').value = 'Guilherme';
-      document.getElementById('histObs').value = '';
-    }
-
-    function removerVenda(id) {
-      const item = estado.historico.find(v => v.id === id);
-      if (!item) return;
-
-      if (item.tipo === 'MED') {
-        estado.totalMed -= item.valor;
-      } else if (item.tipo === 'ECOS') {
-        estado.totalEcos -= item.valor;
-      }
-
-      if (item.vendedor === 'Guilherme') {
-        estado.totalGuilherme -= item.valor;
-      }
-
-      estado.historico = estado.historico.filter(v => v.id !== id);
-      preencherCamposPainel();
-      renderizarTudo();
-      salvarDados();
-    }
-
-    function renderizarHistorico() {
-      const tbody = document.getElementById('historicoTabela');
-
-      if (!estado.historico.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align:center; color: var(--muted); padding: 18px;">
-              Nenhuma venda cadastrada ainda.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = estado.historico.map(item => `
-        <tr>
-          <td>${formatarData(item.data)}</td>
-          <td>${item.cliente}</td>
-          <td>${formatarMoeda(item.valor)}</td>
-          <td><span class="pill ${item.tipo === 'MED' ? 'pill-med' : 'pill-ecos'}">${item.tipo}</span></td>
-          <td>${item.vendedor}</td>
-          <td>${item.obs || '-'}</td>
-          <td><button class="btn-danger" onclick="removerVenda(${item.id})">Excluir</button></td>
-        </tr>
-      `).join('');
-    }
-
-    function formatarData(dataIso) {
-      if (!dataIso) return '-';
-      const [ano, mes, dia] = dataIso.split('-');
-      return `${dia}/${mes}/${ano}`;
-    }
-
     function salvarDados() {
       lerCamposPainel();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
@@ -858,8 +536,7 @@
       salvarDados();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      carregarDados();
+    document.addEventListener('DOMCoarregarDados();
       document.getElementById('histData').value = hojeISO();
     });
   </script>
