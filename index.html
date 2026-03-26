@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saldo do Dia</title>
+    <title>Saldo do Dia - 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white flex items-center justify-center h-screen font-sans">
 
-    <div class="w-full max-w-md p-6 bg-gray-900 rounded-lg border border-gray-800 shadow-2xl text-center">
-        <h2 class="text-gray-500 uppercase text-xs tracking-widest mb-2">Banca Inicial: R$ 5.000,00</h2>
+    <div class="w-full max-w-md p-8 bg-gray-900 rounded-xl border border-gray-800 shadow-2xl text-center">
+        <h2 class="text-gray-500 uppercase text-[10px] tracking-[0.2em] mb-2 font-bold">Banca Inicial: R$ 5.000,00</h2>
         
-        <div class="mb-8">
-            <label class="block text-sm text-gray-400 mb-2 italic">Insira o saldo atual da conta:</label>
-            <input type="number" id="saldoInput" step="0.01" placeholder="0,00"
-                class="bg-transparent text-5xl font-mono text-center w-full focus:outline-none border-b border-gray-700 pb-2 text-blue-400">
+        <div class="mb-10">
+            <label class="block text-xs text-gray-400 mb-3 uppercase tracking-wider">Digite o saldo atual</label>
+            <input type="text" id="saldoInput" placeholder="R$ 0,00"
+                class="bg-transparent text-5xl font-mono text-center w-full focus:outline-none text-blue-400">
+            <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-700 to-transparent mt-2"></div>
         </div>
 
-        <hr class="border-gray-800 mb-8">
-
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-6 border-t border-gray-800 pt-8">
             <div class="text-left">
-                <p class="text-[10px] text-gray-500 uppercase font-bold">Lucro/Prejuízo</p>
+                <p class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Lucro para Retirada</p>
                 <p id="lucroFinal" class="text-2xl font-mono tracking-tighter">R$ 0,00</p>
             </div>
             <div class="text-right">
-                <p class="text-[10px] text-gray-500 uppercase font-bold">Rendimento</p>
+                <p class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Rendimento %</p>
                 <p id="roi" class="text-2xl font-mono tracking-tighter">0%</p>
             </div>
         </div>
@@ -37,17 +36,20 @@
         const roiTxt = document.getElementById('roi');
         const BANCA_INICIAL = 5000;
 
-        // Carregar dado salvo ao abrir
-        window.onload = () => {
-            const salvo = localStorage.getItem('ultimoSaldo');
-            if (salvo) {
-                input.value = salvo;
-                atualizar();
-            }
-        };
+        // Função para formatar moeda em tempo real
+        function formatarMoeda(e) {
+            let v = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            v = (v / 100).toFixed(2) + '';
+            v = v.replace(".", ",");
+            v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+            v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
+            
+            e.target.value = "R$ " + v;
+            calcular(parseFloat(v.replace(/\./g, '').replace(',', '.')));
+        }
 
-        function atualizar() {
-            const valor = parseFloat(input.value) || 0;
+        function calcular(valor) {
+            if (isNaN(valor)) valor = 0;
             const lucro = valor - BANCA_INICIAL;
             const roi = (lucro / BANCA_INICIAL) * 100;
 
@@ -56,14 +58,26 @@
             roiTxt.innerText = `${roi.toFixed(2)}%`;
 
             // Cores Dinâmicas
-            lucroTxt.className = lucro >= 0 ? "text-2xl font-mono text-green-500" : "text-2xl font-mono text-red-500";
-            roiTxt.className = lucro >= 0 ? "text-2xl font-mono text-green-500" : "text-2xl font-mono text-red-500";
+            const cor = lucro >= 0 ? "text-green-500" : "text-red-500";
+            lucroTxt.className = `text-2xl font-mono tracking-tighter ${cor}`;
+            roiTxt.className = `text-2xl font-mono tracking-tighter ${cor}`;
 
-            // Salva no Navegador
-            localStorage.setItem('ultimoSaldo', input.value);
+            // Salva apenas o número puro
+            localStorage.setItem('ultimoSaldoPuro', valor);
         }
 
-        input.addEventListener('input', atualizar);
+        // Carregar valor salvo ao iniciar
+        window.onload = () => {
+            const salvo = localStorage.getItem('ultimoSaldoPuro');
+            if (salvo) {
+                // Simula o evento de input para formatar o valor salvo
+                const valorFormatado = (parseFloat(salvo) * 100).toString();
+                input.value = valorFormatado;
+                input.dispatchEvent(new Event('input'));
+            }
+        };
+
+        input.addEventListener('input', formatarMoeda);
     </script>
 </body>
 </html>
