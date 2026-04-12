@@ -1,272 +1,326 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard Comercial</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Comercial | Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --primary: #10b981; /* Verde esmeralda */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #f1f5f9;
+        }
 
-<style>
-:root{
-  --bg:#0b1220;
-  --card:#111827;
-  --card-2:#0f172a;
-  --border:rgba(255,255,255,.06);
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --primary:#22c55e;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Inter, Arial;
-}
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-body{
-  background:linear-gradient(135deg,#0b1220,#0f172a);
-  color:var(--text);
-  padding:30px;
-}
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
 
-.container{
-  max-width:1100px;
-  margin:auto;
-}
+        header {
+            margin-bottom: 32px;
+            text-align: left;
+        }
 
-h1{
-  margin-bottom:20px;
-}
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
-/* CARDS */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-}
+        /* GRID DE INDICADORES */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
-}
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
 
-.kpi-label{
-  color:var(--muted);
-  font-size:.85rem;
-}
+        .kpi-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
 
-.kpi-value{
-  font-size:1.6rem;
-  font-weight:bold;
-  margin-top:4px;
-}
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 8px;
+            color: var(--text-main);
+        }
 
-/* BLOCO PRINCIPAL */
-.main{
-  margin-top:20px;
-  background:var(--card-2);
-  padding:22px;
-  border-radius:18px;
-  border:1px solid var(--border);
-}
+        /* ÁREA DE ENTRADA */
+        .main-panel {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+        }
 
-/* INPUTS */
-.field{
-  margin-bottom:16px;
-}
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
 
-label{
-  display:block;
-  margin-bottom:6px;
-  color:var(--muted);
-  font-size:.9rem;
-}
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
 
-.input-wrap{
-  display:flex;
-  align-items:center;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:12px;
-}
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: var(--accent);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.2s;
+        }
 
-.prefix{
-  margin-right:6px;
-  color:var(--muted);
-}
+        .input-group:focus-within {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
 
-input{
-  background:transparent;
-  border:none;
-  outline:none;
-  color:var(--text);
-  font-size:1rem;
-  width:100%;
-}
+        .prefix {
+            margin-right: 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
 
-/* BOTÃO */
-button{
-  margin-top:10px;
-  padding:12px 18px;
-  border:none;
-  background:var(--primary);
-  color:#052e16;
-  border-radius:12px;
-  font-weight:bold;
-  cursor:pointer;
-}
+        input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+        }
 
-/* PROGRESSO */
-.progress{
-  margin-top:16px;
-  height:10px;
-  background:#1f2937;
-  border-radius:10px;
-}
+        /* PROGRESSO */
+        .progress-container {
+            margin: 30px 0;
+        }
 
-.bar{
-  height:10px;
-  width:0%;
-  background:var(--primary);
-  border-radius:10px;
-}
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
 
-/* RESULTADO */
-.result{
-  margin-top:16px;
-  line-height:1.6;
-  font-size:.95rem;
-}
+        .progress-bg {
+            height: 12px;
+            background: var(--accent);
+            border-radius: 100px;
+            overflow: hidden;
+        }
 
-/* RESPONSIVO */
-@media(max-width:900px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-}
-</style>
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 100px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .summary {
+            display: flex;
+            gap: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .summary-item span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .summary-item strong {
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .summary { flex-direction: column; gap: 15px; }
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
+    <header>
+        <h1>Dashboard Comercial</h1>
+    </header>
 
-<h1>Dashboard Comercial</h1>
+    <div class="grid">
+        <div class="card">
+            <div class="kpi-label">Meta Mensal</div>
+            <div class="kpi-value" id="disp-meta">R$ 9.000,00</div>
+        </div>
+        <div class="card">
+            <div class="kpi-label">Base Guilherme</div>
+            <div class="kpi-value" id="disp-g">R$ 0,00</div>
+        </div>
+        <div class="card">
+            <div class="kpi-label">Total c/ Bônus</div>
+            <div class="kpi-value" style="color: var(--primary)" id="disp-total">R$ 0,00</div>
+        </div>
+    </div>
 
-<div class="grid">
-  <div class="card">
-    <div class="kpi-label">Meta</div>
-    <div class="kpi-value" id="meta">R$ 7.000,00</div>
-  </div>
+    <div class="main-panel">
+        <div class="form-grid">
+            <div class="field">
+                <label>Venda Guilherme</label>
+                <div class="input-group">
+                    <span class="prefix">R$</span>
+                    <input type="text" id="in-g" placeholder="0,00">
+                </div>
+            </div>
+            <div class="field">
+                <label>Venda MED</label>
+                <div class="input-group">
+                    <span class="prefix">R$</span>
+                    <input type="text" id="in-m" placeholder="0,00">
+                </div>
+            </div>
+            <div class="field">
+                <label>Venda ECOS</label>
+                <div class="input-group">
+                    <span class="prefix">R$</span>
+                    <input type="text" id="in-e" placeholder="0,00">
+                </div>
+            </div>
+        </div>
 
-  <div class="card">
-    <div class="kpi-label">Guilherme</div>
-    <div class="kpi-value" id="guilherme">R$ 0,00</div>
-  </div>
+        <div class="progress-container">
+            <div class="progress-info">
+                <span>Progresso da Meta</span>
+                <span id="pct-text">0%</span>
+            </div>
+            <div class="progress-bg">
+                <div class="progress-bar" id="bar"></div>
+            </div>
+        </div>
 
-  <div class="card">
-    <div class="kpi-label">MED</div>
-    <div class="kpi-value" id="med">R$ 0,00</div>
-  </div>
-
-  <div class="card">
-    <div class="kpi-label">ECOS</div>
-    <div class="kpi-value" id="ecos">R$ 0,00</div>
-  </div>
-</div>
-
-<div class="main">
-
-<div class="field">
-  <label>Guilherme</label>
-  <div class="input-wrap">
-    <span class="prefix">R$</span>
-    <input id="g" value="0,00">
-  </div>
-</div>
-
-<div class="field">
-  <label>MED</label>
-  <div class="input-wrap">
-    <span class="prefix">R$</span>
-    <input id="m" value="0,00">
-  </div>
-</div>
-
-<div class="field">
-  <label>ECOS</label>
-  <div class="input-wrap">
-    <span class="prefix">R$</span>
-    <input id="e" value="0,00">
-  </div>
-</div>
-
-<button onclick="calc()">Atualizar</button>
-
-<div class="progress">
-  <div class="bar" id="bar"></div>
-</div>
-
-<div class="result" id="res"></div>
-
-</div>
-
+        <div class="summary">
+            <div class="summary-item">
+                <span>Faltam para o objetivo</span>
+                <strong id="disp-falta">R$ 9.000,00</strong>
+            </div>
+            <div class="summary-item">
+                <span>Bônus Gerado (15%)</span>
+                <strong id="disp-bonus">R$ 0,00</strong>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-const META = 7000;
+    const META = 9000;
 
-function moeda(v){
-  return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-}
+    const inputs = {
+        g: document.getElementById('in-g'),
+        m: document.getElementById('in-m'),
+        e: document.getElementById('in-e')
+    };
 
-function limpar(v){
-  return Number(v.replace(/\./g,'').replace(',','.'))||0;
-}
+    const displays = {
+        g: document.getElementById('disp-g'),
+        total: document.getElementById('disp-total'),
+        falta: document.getElementById('disp-falta'),
+        bonus: document.getElementById('disp-bonus'),
+        bar: document.getElementById('bar'),
+        pct: document.getElementById('pct-text')
+    };
 
-function mask(input){
-  input.addEventListener('input',()=>{
-    let v = input.value.replace(/\D/g,'');
-
-    if(!v){
-      input.value='';
-      return;
+    function formatMoeda(valor) {
+        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    v=(v/100).toFixed(2);
-    v=v.replace('.',',');
-    v=v.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    function parseValor(str) {
+        return Number(str.replace(/\./g, '').replace(',', '.')) || 0;
+    }
 
-    input.value=v;
-  })
-}
+    function aplicarMascara(ev) {
+        let input = ev.target;
+        let v = input.value.replace(/\D/g, '');
+        if (!v) { input.value = ''; return; }
+        
+        v = (v / 100).toFixed(2).replace('.', ',');
+        v = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        input.value = v;
+        
+        atualizarCalculos();
+    }
 
-function calc(){
-  let g=limpar(document.getElementById('g').value);
-  let m=limpar(document.getElementById('m').value);
-  let e=limpar(document.getElementById('e').value);
+    function atualizarCalculos() {
+        const valG = parseValor(inputs.g.value);
+        const valM = parseValor(inputs.m.value);
+        const valE = parseValor(inputs.e.value);
 
-  let bonus=(m+e)*0.15;
-  let total=g+bonus;
-  let falta=Math.max(META-total,0);
-  let pct=(total/META)*100;
+        const bonus = (valM + valE) * 0.15;
+        const totalGeral = valG + bonus;
+        const falta = Math.max(META - totalGeral, 0);
+        const porcentagem = Math.min((totalGeral / META) * 100, 100);
 
-  document.getElementById('guilherme').innerText=moeda(g);
-  document.getElementById('med').innerText=moeda(m);
-  document.getElementById('ecos').innerText=moeda(e);
+        // Atualiza Displays
+        displays.g.innerText = formatMoeda(valG);
+        displays.total.innerText = formatMoeda(totalGeral);
+        displays.falta.innerText = formatMoeda(falta);
+        displays.bonus.innerText = formatMoeda(bonus);
+        
+        // Atualiza Barra
+        displays.bar.style.width = `${porcentagem}%`;
+        displays.pct.innerText = `${porcentagem.toFixed(1)}%`;
+    }
 
-  document.getElementById('bar').style.width=pct+"%";
-
-  document.getElementById('res').innerHTML =
-    `Total: <b>${moeda(total)}</b><br>
-     Falta: <b>${moeda(falta)}</b>`;
-}
-
-mask(document.getElementById('g'));
-mask(document.getElementById('m'));
-mask(document.getElementById('e'));
+    // Event Listeners
+    Object.values(inputs).forEach(input => {
+        input.addEventListener('input', aplicarMascara);
+    });
 </script>
 
 </body>
